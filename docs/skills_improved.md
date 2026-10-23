@@ -1,0 +1,3 @@
+- Improved my knowledge and practical experience of Tailwind styling
+- CSS modules in a Next.js setting
+- First project using file-system mechanism for page routing. It was certainly different from the more server-side routing models I had been accustomed so far.

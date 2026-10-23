@@ -6,4 +6,5 @@
 * Mention of the `clsx` library.
 - Font optimization with the `next/font` module. The **Cumulative Layout Shift** metric.
 - Image optimization with the `next/image` module and the `<Image>` Component.
-
+- Various ways to fetch data and communicate with a database (APIs, SQL queries, ORMs, or Server Components).
+- React Server Components and their benefits.

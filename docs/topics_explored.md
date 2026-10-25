@@ -11,6 +11,7 @@
 - Request waterfalls and their consequences.
 - Static vs dynamic rendering.
 - Streaming, when it is useful, and how to implement it in Next.js with `loading.tsx` and React `Suspense`.
+- Suspense boundaries and use cases demonstrating their significance.
 - Loading skeletons.
 - Next.js Route Groups, parenthesized folders and their significance.
 - Interruptable navigation.

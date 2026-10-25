@@ -8,3 +8,9 @@
 - Image optimization with the `next/image` module and the `<Image>` Component.
 - Various ways to fetch data and communicate with a database (APIs, SQL queries, ORMs, or Server Components).
 - React Server Components and their benefits.
+- Request waterfalls and their consequences.
+- Static vs dynamic rendering.
+- Streaming, when it is useful, and how to implement it in Next.js with `loading.tsx` and React `Suspense`.
+- Loading skeletons.
+- Next.js Route Groups, parenthesized folders and their significance.
+- Interruptable navigation.

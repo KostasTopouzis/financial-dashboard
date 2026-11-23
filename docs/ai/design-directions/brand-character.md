@@ -1,0 +1,3 @@
+Acme is a company with years of experience of providing solutions for professional in various domains. We take pride in providing up-to-date software and financial services that make no compromises in effectiveness, security, reliability and ease of use. We wish our brand aesthetic should be able to communicate to customers our core principles in a clear, intuitive way:
+
+We would prefer an presentation (including brand logo, catch-phrases, and visual design) that is modern but still invoking the sense of the company's deep history in service provision. A style that should communicating a sense of commitment and seriousness of purpose that without ever becoming cold or impersonal. Our preferred style should be elegant, avoiding excesses or any fashionable banality.

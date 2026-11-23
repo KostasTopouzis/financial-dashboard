@@ -1,0 +1,92 @@
+# The Acme financial dashboard changelog
+
+v0.1.0: Initial version after completing the Next.js App Router tutorial | 2026-11-22 17:36
+
+Category: architecture
+
+- Next.js App Router project (React 19, TypeScript, Tailwind CSS)
+  with a Postgres database reached through the postgres client over
+  SSL, using the POSTGRES_URL environment variable.
+- app/layout.tsx: root layout with the Inter font, global styles and
+  shared metadata (title template "%s | Acme Dashboard",
+  description, metadataBase). Each page sets its own title.
+- app/dashboard/layout.tsx: shared dashboard shell with the SideNav
+  (navigation links and a sign-out button) and the page content.
+- app/lib/data.ts: server-side read queries for revenue, latest
+  invoices, card totals, filtered and paginated invoices (6 per
+  page), a single invoice and customers. Card totals run three
+  queries in parallel with Promise.all.
+- app/lib/actions.ts: Server Actions for creating, updating and
+  deleting invoices. Form data is validated with Zod, amounts are
+  stored in cents, field errors are returned to the form, and the
+  invoices page is revalidated and redirected to on success. Also
+  holds authenticate(), which signs users in with credentials.
+- app/lib/definitions.ts and app/lib/utils.ts: shared types and
+  helpers (currency and date formatting, revenue chart y-axis
+  labels, pagination numbers).
+- app/dashboard/(overview)/page.tsx: dashboard overview that streams
+  the KPI cards, revenue chart and latest invoices separately inside
+  Suspense boundaries, with skeletons and a route-level loading.tsx.
+- app/dashboard/invoices/page.tsx: invoice list driven by the query
+  and page URL search parameters. The search input updates the URL
+  with a 300 ms debounce, and the table is wrapped in Suspense with
+  a skeleton fallback.
+- app/dashboard/invoices/create and [id]/edit: invoice forms built on
+  useActionState, with per-field error messages linked through
+  aria-describedby. The edit page loads the invoice and customers in
+  parallel and calls notFound() for unknown ids.
+- app/dashboard/invoices/error.tsx and [id]/edit/not-found.tsx:
+  error boundary with a retry button and a 404 page for invoices.
+- auth.config.ts, auth.ts and proxy.ts: NextAuth.js v5 with a
+  Credentials provider. Credentials are validated with Zod, users are
+  looked up in the users table and passwords are compared with
+  bcrypt. The proxy protects /dashboard and sends signed-in users
+  away from /login.
+- app/login/page.tsx and app/ui/login-form.tsx: login page with a
+  pending state and an error message for invalid credentials.
+- app/seed/route.ts: GET /seed creates the users, customers,
+  invoices and revenue tables and fills them with placeholder data
+  in a single transaction, hashing user passwords with bcrypt.
+- app/query/route.ts: GET /query, a test endpoint from the tutorial
+  that returns the invoices with an amount of 666.
+- app/dashboard/customers/page.tsx: placeholder Customers page. The
+  fetchFilteredCustomers() query exists but is not used yet.
+
+Category: frontend
+
+- Generic design and brand identity provided by the tutorial itself.
+
+v0.1.1: Project documentation and development tooling | 2026-11-23 11:48
+
+Category: documentation
+
+- README.md: replaced the tutorial starter text with a project
+  README (history, purpose, current and planned functionality, tech
+  stack, learning goals, AI-assisted development, how to run,
+  license and contact). Added the version number and a New Features
+  section.
+- LICENSE: added the MIT License.
+- public/home-page.png: home page screenshot used in the README.
+- docs/changelog/changelog_0-x-x.txt: new changelog for the 0.x.x
+  releases, with the v0.1.0 tutorial baseline and this entry.
+- docs/progress.md: roadmap of the next refactoring steps.
+- docs/problems_faced.md, docs/to_fix.md, docs/to_improve.md: empty
+  placeholders for project notes.
+- docs/skills_improved.md, docs/topics_explored.md: reworded and
+  extended the learning notes (clsx, Tailwind, file-system routing).
+- docs/ai/: brand character and app purpose drafts used as
+  guidance for AI-assisted design work.
+
+Category: tooling
+
+- CLAUDE.md: project instructions for Claude Code (Git rules).
+- .claude/skills/: project skills for backend/API review, frontend
+  design, UI review, README writing and commit preparation.
+- .github/workflows/ci.yml: GitHub Actions workflow that installs
+  dependencies with pnpm, lints and builds on pushes and pull
+  requests to main. The build reads POSTGRES_URL and AUTH_SECRET
+  from repository secrets, since /dashboard is prerendered against
+  the database.
+- package.json: added the version field (0.1.1), the packageManager
+  field (pnpm@12.14.0) and a lint script (eslint .).
+- pnpm-lock.yaml: pnpm now records its own pinned version.

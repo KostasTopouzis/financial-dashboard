@@ -1,9 +1,12 @@
 {
   "private": true,
+  "version": "0.1.1",
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

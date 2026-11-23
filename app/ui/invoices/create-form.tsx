@@ -95,7 +95,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   name="status"
                   type="radio"
                   value="pending"
-                  className="h-4 w-4 cursor-pointer border-line-strong text-brand focus:ring-2 focus:ring-brand"
+                  className="field-radio"
                   aria-describedby="status-error"
                 />
                 <label
@@ -111,7 +111,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   name="status"
                   type="radio"
                   value="paid"
-                  className="h-4 w-4 cursor-pointer border-line-strong text-brand focus:ring-2 focus:ring-brand"
+                  className="field-radio"
                 />
                 <label
                   htmlFor="paid"

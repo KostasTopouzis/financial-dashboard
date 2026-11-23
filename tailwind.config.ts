@@ -6,6 +6,10 @@ import type { Config } from 'tailwindcss';
 const token = (name: string) => `rgb(var(--color-${name}) / <alpha-value>)`;
 
 const config: Config = {
+  // Tokens handle almost everything. `dark:` is for rare one-off tweaks and
+  // follows the attribute set by the theme script, not the OS media query,
+  // so a user's manual choice wins.
+  darkMode: ['selector', '[data-theme="dark"]'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -37,6 +41,11 @@ const config: Config = {
           DEFAULT: token('on-brand'),
           muted: token('on-brand-muted'),
         },
+        primary: {
+          DEFAULT: token('primary'),
+          hover: token('primary-hover'),
+        },
+        'on-primary': token('on-primary'),
         accent: {
           DEFAULT: token('accent'),
           soft: token('accent-soft'),

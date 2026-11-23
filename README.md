@@ -1,4 +1,4 @@
-# Ashby & Vale Financial Dashboard v0.2.0
+# Ashby & Vale Financial Dashboard v0.3.0
 
 The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
@@ -6,7 +6,13 @@ The Ashby & Vale dashboard is a freelancer dashboard app that in its final versi
 
 ## New Features
 
-v0.2.0 replaces the tutorial's "Acme" look with a new brand identity, Ashby & Vale:
+v0.3.0 adds a dark mode:
+
+- A Light / Dark / System switch in the sidebar. By default the app follows your device's setting, and your choice is remembered on your next visit.
+- The page opens in the right theme straight away, without flashing light first.
+- The dark theme keeps the green and brass character on deep green-black backgrounds, with text that stays easy to read.
+
+v0.2.0 replaced the tutorial's "Acme" look with a new brand identity, Ashby & Vale:
 
 - A new name, logo and tagline ("Steady counsel for independent work."), with a deep green and brass color scheme and classic serif headings.
 - A new home page that introduces the app and links to sign-in, replacing the tutorial's welcome text.

@@ -6,7 +6,7 @@ export function CreateInvoice() {
   return (
     <Link
       href="/dashboard/invoices/create"
-      className="flex h-10 shrink-0 items-center gap-2 rounded bg-brand px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-deep"
+      className="flex h-10 shrink-0 items-center gap-2 rounded bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
     >
       <PlusIcon className="h-5" aria-hidden="true" />
       <span className="sr-only md:not-sr-only">New invoice</span>

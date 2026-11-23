@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import NavLinks, { navItemClass } from '@/app/ui/dashboard/nav-links';
 import BrandLogo, { BrandPattern } from '@/app/ui/brand-logo';
+import ThemeSwitcher from '@/app/ui/theme-switcher';
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/outline';
 import { signOut } from '@/auth';
 import { brand } from '@/app/lib/brand';
@@ -22,6 +23,7 @@ export default function SideNav() {
       >
         <NavLinks />
         <div className="hidden grow md:block" />
+        <ThemeSwitcher className="shrink-0 md:mb-2 md:justify-between md:pl-3" />
         <form
           className="flex grow md:grow-0"
           action={async () => {

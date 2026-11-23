@@ -9,13 +9,19 @@
  * work, e.g. `bg-brand/80`.
  *
  * To switch brand (e.g. to Northmark), add a sibling theme file with the
- * same token names, import it in app/layout.tsx instead of this one, and
- * update app/lib/brand.ts, app/ui/fonts.ts and app/ui/brand-logo.tsx
- * (which also exports the optional BrandPattern decoration).
+ * same token names (light and dark blocks), import it in app/layout.tsx
+ * instead of this one, and update app/lib/brand.ts, app/ui/fonts.ts and
+ * app/ui/brand-logo.tsx (which also exports the optional BrandPattern
+ * decoration).
  *
- * Dark mode: redefine the same tokens under a dark selector in this file.
+ * Dark mode: the inline script from app/lib/theme.ts sets
+ * <html data-theme="light|dark"> before first paint, following the OS
+ * unless the user picked a theme. The dark block below only redefines
+ * token values; components stay untouched.
  */
 :root {
+  color-scheme: light;
+
   /* Page and content surfaces */
   --color-canvas: 241 242 238;        /* #F1F2EE stone */
   --color-surface: 255 255 255;       /* #FFFFFF */
@@ -25,12 +31,19 @@
   --color-line: 225 227 220;          /* #E1E3DC hairlines */
   --color-line-strong: 196 201 191;   /* #C4C9BF input borders, disabled */
 
-  /* Brand (navigation column, primary actions) */
+  /* Brand panels (navigation column, landing hero, login header) */
   --color-brand: 30 58 47;            /* #1E3A2F bottle green */
-  --color-brand-deep: 22 44 35;       /* #162C23 hover / pressed */
+  --color-brand-deep: 22 44 35;       /* #162C23 text on brass */
   --color-brand-raised: 44 76 63;     /* #2C4C3F active item on brand */
   --color-on-brand: 239 233 214;      /* #EFE9D6 text on brand */
   --color-on-brand-muted: 176 189 179;/* #B0BDB3 secondary text on brand */
+
+  /* Primary actions and data marks (buttons, active page, radios, bars).
+   * Same green as the brand panels in light mode; split out because in
+   * dark mode panels go darker while actions must stay visible. */
+  --color-primary: 30 58 47;          /* #1E3A2F */
+  --color-primary-hover: 22 44 35;    /* #162C23 */
+  --color-on-primary: 239 233 214;    /* #EFE9D6 */
 
   /* Accent (brass). Use for rules, highlights and marks, not body text. */
   --color-accent: 160 125 62;         /* #A07D3E brass on light surfaces */
@@ -49,4 +62,44 @@
   /* Shape and type roles */
   --radius: 4px;
   --font-figures: var(--font-sans);   /* tabular sans figures */
+}
+
+/*
+ * Dark: deep green-black instead of pure black. Depth comes from lighter
+ * surfaces (canvas < sunken < surface), not shadows. Brass and status
+ * colors are lightened; every text pair is at least WCAG AA (4.5:1) and
+ * primary/accent marks at least 3:1 against the surface.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-canvas: 15 21 19;           /* #0F1513 */
+  --color-surface: 24 32 28;          /* #18201C */
+  --color-surface-sunken: 19 26 23;   /* #131A17 */
+  --color-ink: 230 232 225;           /* #E6E8E1 */
+  --color-muted: 163 175 168;         /* #A3AFA8 */
+  --color-line: 41 51 46;             /* #29332E */
+  --color-line-strong: 72 85 78;      /* #48554E */
+
+  --color-brand: 23 48 42;            /* #17302A darker bottle green panel */
+  --color-brand-deep: 16 35 29;       /* #10231D */
+  --color-brand-raised: 36 70 59;     /* #24463B */
+  --color-on-brand: 239 233 214;      /* #EFE9D6 */
+  --color-on-brand-muted: 176 189 179;/* #B0BDB3 */
+
+  --color-primary: 60 118 95;         /* #3C765F lifted green, 3.1:1 on surface */
+  --color-primary-hover: 44 92 72;    /* #2C5C48 */
+  --color-on-primary: 244 240 226;    /* #F4F0E2 */
+
+  --color-accent: 201 167 100;        /* #C9A764 */
+  --color-accent-soft: 210 180 116;   /* #D2B474 */
+
+  --color-paid-bg: 29 58 44;          /* #1D3A2C */
+  --color-paid-fg: 163 215 182;       /* #A3D7B6 */
+  --color-pending-bg: 58 47 21;       /* #3A2F15 */
+  --color-pending-fg: 233 202 130;    /* #E9CA82 */
+  --color-danger: 240 140 126;        /* #F08C7E */
+  --color-danger-bg: 62 31 27;        /* #3E1F1B */
+
+  --color-focus: 143 203 173;         /* #8FCBAD pale sage, visible on dark */
 }

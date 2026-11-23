@@ -52,7 +52,7 @@ export default async function RevenueChart() {
             <div
               className={clsx(
                 'w-full rounded-t-sm',
-                i === lastIndex ? 'bg-accent' : 'bg-brand',
+                i === lastIndex ? 'bg-accent' : 'bg-primary',
               )}
               style={{
                 height: `${(chartHeight / topLabel) * month.revenue}px`,

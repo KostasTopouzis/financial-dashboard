@@ -23,7 +23,7 @@ export default function Error({
       </h2>
       <p className="text-muted">This is usually temporary. Please try again.</p>
       <button
-        className="mt-4 rounded bg-brand px-4 py-2 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-deep"
+        className="mt-4 rounded bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
         onClick={
           // Attempt to recover by trying to re-render the invoices route
           () => reset()

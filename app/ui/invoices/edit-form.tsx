@@ -86,7 +86,7 @@ export default function EditInvoiceForm({
                   type="radio"
                   value="pending"
                   defaultChecked={invoice.status === 'pending'}
-                  className="h-4 w-4 cursor-pointer border-line-strong text-brand focus:ring-2 focus:ring-brand"
+                  className="field-radio"
                 />
                 <label
                   htmlFor="pending"
@@ -102,7 +102,7 @@ export default function EditInvoiceForm({
                   type="radio"
                   value="paid"
                   defaultChecked={invoice.status === 'paid'}
-                  className="h-4 w-4 cursor-pointer border-line-strong text-brand focus:ring-2 focus:ring-brand"
+                  className="field-radio"
                 />
                 <label
                   htmlFor="paid"

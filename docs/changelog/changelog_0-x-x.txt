@@ -167,3 +167,44 @@ Category: documentation
 - README.md: title, intro name, version (0.2.0) and New Features
   updated to the new brand.
 - package.json: version bumped to 0.2.0.
+
+
+v0.3.0: Dark mode with a Light / Dark / System switcher | 2026-11-23 14:39
+
+Category: frontend
+
+- app/lib/theme.ts: new theme module. The preference (light, dark or
+  system) is stored in localStorage, and the resolved theme is set on
+  <html data-theme>. An inline script applies it before the first
+  paint (no flash of the wrong theme), follows OS changes while the
+  preference is "system" and syncs other tabs. Falls back to an
+  in-memory preference when storage is blocked.
+- app/ui/theme-switcher.tsx: new segmented Light / Dark / System
+  control built on visually hidden native radios, read through
+  useSyncExternalStore to avoid hydration mismatches.
+- app/ui/dashboard/sidenav.tsx: theme switcher added above the
+  sign-out button.
+- app/layout.tsx: inlines the theme script in <head>, suppresses the
+  expected hydration warning on <html> and sets color-scheme and
+  light/dark theme-color through the viewport export.
+- app/ui/themes/ashby-vale.css: dark token block under
+  [data-theme='dark'] (green-black surfaces, lightened brass and
+  status colors, WCAG AA text contrast). New primary, primary-hover
+  and on-primary tokens split actions from brand panels.
+- tailwind.config.ts: primary and on-primary colors, and dark: now
+  follows the data-theme attribute instead of the OS media query.
+- app/ui/global.css: new field-radio class so radios use theme
+  tokens; field-input focus uses the primary color.
+- app/ui/button.tsx, app/ui/invoices/buttons.tsx,
+  app/ui/invoices/pagination.tsx, app/ui/dashboard/revenue-chart.tsx,
+  app/dashboard/invoices/error.tsx, [id]/edit/not-found.tsx: buttons,
+  the active page and chart bars use the primary tokens.
+- app/ui/invoices/create-form.tsx, edit-form.tsx: status radios use
+  field-radio.
+
+Category: documentation
+
+- docs/progress.md: brand identity and dark mode done; the user
+  workspace dashboard page is next.
+- README.md: version (0.3.0) and New Features updated.
+- package.json: version bumped to 0.3.0.

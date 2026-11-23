@@ -13,7 +13,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/dashboard/invoices"
-        className="mt-4 rounded bg-brand px-4 py-2 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-deep"
+        className="mt-4 rounded bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
       >
         Back to invoices
       </Link>

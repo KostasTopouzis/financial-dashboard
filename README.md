@@ -1,13 +1,19 @@
-# Acme Financial Dashboard v0.1.2
+# Ashby & Vale Financial Dashboard v0.2.0
 
-The Acme dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
+The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
+
+![Ashby & Vale Dashboard home page](/public/home-page.png)
 
 ## New Features
 
-v0.1.2 makes no visible changes to the app:
+v0.2.0 replaces the tutorial's "Acme" look with a new brand identity, Ashby & Vale:
 
-- The dashboard pages now always load their data from the database when they are opened, instead of using a copy made when the app was built.
-- The app can now be built without a database connection, so the GitHub Actions workflow no longer needs any database credentials.
+- A new name, logo and tagline ("Steady counsel for independent work."), with a deep green and brass color scheme and classic serif headings.
+- A new home page that introduces the app and links to sign-in, replacing the tutorial's welcome text.
+- A redesigned sign-in page, sidebar, overview, invoice list and invoice forms. Amounts line up in columns, and the most recent month stands out in the revenue chart.
+- Clearer messages when there are no invoices to show, when an invoice cannot be found, or when something goes wrong.
+- Better support for keyboard and screen-reader users: visible focus outlines, labels on all icon buttons, and a text version of the revenue chart.
+- The app now speaks of "clients" instead of "customers".
 
 ## Project History 
 
@@ -42,7 +48,7 @@ After the end of the refactoring process, my aim is to present the user with the
 - See at a glance who owes money and how late the payment is, grouped into 0–30, 31–60 and 60+ days overdue.
 - View a revenue chart based on the payments actually received, and narrow it down to the last 30 days, the last quarter or the last year.
 
-![Acme Dashboard home page](/public/home-page.png)
+
 
 ## Tech Stack
 

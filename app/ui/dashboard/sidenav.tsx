@@ -1,35 +1,40 @@
 import Link from 'next/link';
-import NavLinks from '@/app/ui/dashboard/nav-links';
-import AcmeLogo from '@/app/ui/acme-logo';
-import { PowerIcon } from '@heroicons/react/24/outline';
+import NavLinks, { navItemClass } from '@/app/ui/dashboard/nav-links';
+import BrandLogo, { BrandPattern } from '@/app/ui/brand-logo';
+import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/outline';
 import { signOut } from '@/auth';
+import { brand } from '@/app/lib/brand';
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2">
+    <div className="relative flex h-full flex-col overflow-hidden bg-brand px-3 py-4 md:px-4 md:py-8">
+      <BrandPattern className="pointer-events-none absolute -bottom-24 -right-28 hidden w-80 md:block" />
       <Link
-        className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4 md:h-40"
+        className="relative mb-4 flex items-center rounded px-2 py-1 focus-visible:outline-accent-soft md:mb-10"
         href="/"
+        aria-label={`${brand.name} home`}
       >
-        <div className="w-32 text-white md:w-40">
-          <AcmeLogo />
-        </div>
+        <BrandLogo size="sm" />
       </Link>
-      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+      <nav
+        aria-label="Main"
+        className="relative flex grow flex-row gap-2 md:flex-col md:gap-1"
+      >
         <NavLinks />
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
+        <div className="hidden grow md:block" />
         <form
+          className="flex grow md:grow-0"
           action={async () => {
             'use server';
             await signOut({ redirectTo: '/' });
           }}
         >
-          <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerIcon className="w-6" />
-            <div className="hidden md:block">Sign Out</div>
+          <button className={navItemClass}>
+            <ArrowRightStartOnRectangleIcon className="w-5" aria-hidden="true" />
+            <span className="sr-only md:not-sr-only">Sign out</span>
           </button>
         </form>
-      </div>
+      </nav>
     </div>
   );
 }

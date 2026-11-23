@@ -71,18 +71,20 @@ function PaginationNumber({
   isActive: boolean;
 }) {
   const className = clsx(
-    'flex h-10 w-10 items-center justify-center text-sm border',
+    'flex h-10 w-10 items-center justify-center border border-line-strong bg-surface text-sm font-figures tabular-nums text-ink',
     {
-      'rounded-l-md': position === 'first' || position === 'single',
-      'rounded-r-md': position === 'last' || position === 'single',
-      'z-10 bg-blue-600 border-blue-600 text-white': isActive,
-      'hover:bg-gray-100': !isActive && position !== 'middle',
-      'text-gray-300': position === 'middle',
+      'rounded-l': position === 'first' || position === 'single',
+      'rounded-r': position === 'last' || position === 'single',
+      'z-10 border-brand bg-brand font-semibold text-on-brand': isActive,
+      'hover:bg-surface-sunken': !isActive && position !== 'middle',
+      'text-muted': position === 'middle',
     },
   );
 
   return isActive || position === 'middle' ? (
-    <div className={className}>{page}</div>
+    <div className={className} aria-current={isActive ? 'page' : undefined}>
+      {page}
+    </div>
   ) : (
     <Link href={href} className={className}>
       {page}
@@ -100,10 +102,10 @@ function PaginationArrow({
   isDisabled?: boolean;
 }) {
   const className = clsx(
-    'flex h-10 w-10 items-center justify-center rounded-md border',
+    'flex h-10 w-10 items-center justify-center rounded border border-line-strong bg-surface text-ink',
     {
-      'pointer-events-none text-gray-300': isDisabled,
-      'hover:bg-gray-100': !isDisabled,
+      'pointer-events-none text-line-strong': isDisabled,
+      'hover:bg-surface-sunken': !isDisabled,
       'mr-2 md:mr-4': direction === 'left',
       'ml-2 md:ml-4': direction === 'right',
     },
@@ -116,10 +118,14 @@ function PaginationArrow({
       <ArrowRightIcon className="w-4" />
     );
 
+  const label = direction === 'left' ? 'Previous page' : 'Next page';
+
   return isDisabled ? (
-    <div className={className}>{icon}</div>
+    <div className={className} aria-hidden="true">
+      {icon}
+    </div>
   ) : (
-    <Link className={className} href={href}>
+    <Link className={className} href={href} aria-label={label}>
       {icon}
     </Link>
   );

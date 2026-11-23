@@ -1,64 +1,63 @@
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-import clsx from 'clsx';
 import Image from 'next/image';
-import { lusitana } from '@/app/ui/fonts';
-// import { LatestInvoice } from '@/app/lib/definitions';
 import { fetchLatestInvoices } from '@/app/lib/data';
 
-export default async function LatestInvoices(){
+export default async function LatestInvoices() {
   const latestInvoices = await fetchLatestInvoices();
-  
-  return (
-    <div className="flex w-full flex-col md:col-span-4">
-      <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Latest Invoices
-      </h2>
-      <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
-        {/* NOTE: Uncomment this code in Chapter 7 */}
 
-        <div className="bg-white px-6">
-          {latestInvoices.map((invoice, i) => {
-            return (
-              <div
-                key={invoice.id}
-                className={clsx(
-                  'flex flex-row items-center justify-between py-4',
-                  {
-                    'border-t': i !== 0,
-                  },
-                )}
-              >
-                <div className="flex items-center">
-                  <Image
-                    src={invoice.image_url}
-                    alt={`${invoice.name}'s profile picture`}
-                    className="mr-4 rounded-full"
-                    width={32}
-                    height={32}
-                  />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold md:text-base">
-                      {invoice.name}
-                    </p>
-                    <p className="hidden text-sm text-gray-500 sm:block">
-                      {invoice.email}
-                    </p>
-                  </div>
-                </div>
-                <p
-                  className={`${lusitana.className} truncate text-sm font-medium md:text-base`}
-                >
-                  {invoice.amount}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex items-center pb-2 pt-6">
-          <ArrowPathIcon className="h-5 w-5 text-gray-500" />
-          <h3 className="ml-2 text-sm text-gray-500 ">Updated just now</h3>
-        </div>
+  return (
+    <section
+      aria-labelledby="latest-invoices-heading"
+      className="flex w-full flex-col rounded border border-line bg-surface p-5 md:col-span-4"
+    >
+      <div className="mb-3 flex items-baseline justify-between gap-2">
+        <h2
+          id="latest-invoices-heading"
+          className="font-display text-2xl font-semibold text-ink"
+        >
+          Recent invoices
+        </h2>
+        <p className="text-sm text-muted">Latest five</p>
       </div>
-    </div>
+
+      {latestInvoices.length === 0 ? (
+        <p className="py-6 text-muted">No invoices issued yet.</p>
+      ) : (
+        <ul className="divide-y divide-line">
+          {latestInvoices.map((invoice) => (
+            <li
+              key={invoice.id}
+              className="flex items-center justify-between gap-4 py-3.5"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <Image
+                  src={invoice.image_url}
+                  alt=""
+                  className="shrink-0 rounded-full"
+                  width={36}
+                  height={36}
+                />
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-ink">
+                    {invoice.name}
+                  </p>
+                  <p className="hidden truncate text-sm text-muted sm:block">
+                    {invoice.email}
+                  </p>
+                </div>
+              </div>
+              <p className="shrink-0 font-semibold font-figures tabular-nums text-ink">
+                {invoice.amount}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="mt-auto flex items-center gap-2 border-t border-line pt-4 text-sm text-muted">
+        <ArrowPathIcon className="h-4 w-4" aria-hidden="true" />
+        Updated just now
+      </div>
+    </section>
   );
 }

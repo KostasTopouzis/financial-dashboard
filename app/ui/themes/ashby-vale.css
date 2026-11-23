@@ -1,0 +1,52 @@
+/*
+ * Theme: Ashby & Vale (private-bank direction)
+ *
+ * Every color in the app is read from these tokens through the semantic
+ * Tailwind colors defined in tailwind.config.ts (bg-surface, text-muted,
+ * bg-brand, ...). Components never use raw hex values.
+ *
+ * Values are space-separated RGB channels so Tailwind opacity modifiers
+ * work, e.g. `bg-brand/80`.
+ *
+ * To switch brand (e.g. to Northmark), add a sibling theme file with the
+ * same token names, import it in app/layout.tsx instead of this one, and
+ * update app/lib/brand.ts, app/ui/fonts.ts and app/ui/brand-logo.tsx
+ * (which also exports the optional BrandPattern decoration).
+ *
+ * Dark mode: redefine the same tokens under a dark selector in this file.
+ */
+:root {
+  /* Page and content surfaces */
+  --color-canvas: 241 242 238;        /* #F1F2EE stone */
+  --color-surface: 255 255 255;       /* #FFFFFF */
+  --color-surface-sunken: 247 247 243;/* #F7F7F3 table heads, quiet fills */
+  --color-ink: 27 40 34;              /* #1B2822 primary text */
+  --color-muted: 92 106 99;           /* #5C6A63 secondary text */
+  --color-line: 225 227 220;          /* #E1E3DC hairlines */
+  --color-line-strong: 196 201 191;   /* #C4C9BF input borders, disabled */
+
+  /* Brand (navigation column, primary actions) */
+  --color-brand: 30 58 47;            /* #1E3A2F bottle green */
+  --color-brand-deep: 22 44 35;       /* #162C23 hover / pressed */
+  --color-brand-raised: 44 76 63;     /* #2C4C3F active item on brand */
+  --color-on-brand: 239 233 214;      /* #EFE9D6 text on brand */
+  --color-on-brand-muted: 176 189 179;/* #B0BDB3 secondary text on brand */
+
+  /* Accent (brass). Use for rules, highlights and marks, not body text. */
+  --color-accent: 160 125 62;         /* #A07D3E brass on light surfaces */
+  --color-accent-soft: 201 167 100;   /* #C9A764 brass on brand surfaces */
+
+  /* Feedback */
+  --color-paid-bg: 223 236 227;       /* #DFECE3 */
+  --color-paid-fg: 31 86 56;          /* #1F5638 */
+  --color-pending-bg: 244 234 210;    /* #F4EAD2 */
+  --color-pending-fg: 117 84 18;      /* #755412 */
+  --color-danger: 166 52 40;          /* #A63428 */
+  --color-danger-bg: 248 229 225;     /* #F8E5E1 */
+
+  --color-focus: 30 58 47;            /* focus ring on light surfaces */
+
+  /* Shape and type roles */
+  --radius: 4px;
+  --font-figures: var(--font-sans);   /* tabular sans figures */
+}

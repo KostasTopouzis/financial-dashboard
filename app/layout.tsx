@@ -1,13 +1,15 @@
+import '@/app/ui/themes/ashby-vale.css';
 import '@/app/ui/global.css';
-import { inter } from '@/app/ui/fonts';
+import { displayFont, sansFont } from '@/app/ui/fonts';
+import { brand } from '@/app/lib/brand';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Acme Dashboard',
+    template: `%s | ${brand.name}`,
+    default: brand.name,
   },
-  description: 'The official Next.js Course Dashboard, built with App Router.',
+  description: brand.description,
   metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
 };
 
@@ -17,8 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+    <html lang="en" className={`${displayFont.variable} ${sansFont.variable}`}>
+      <body className="bg-canvas font-sans text-ink antialiased">
+        {children}
+      </body>
     </html>
   );
 }

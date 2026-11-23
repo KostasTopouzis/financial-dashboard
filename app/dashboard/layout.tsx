@@ -10,7 +10,9 @@ export default function Layout({
             <div className="w-full flex-none md:w-64">
                 <SideNav />
             </div>
-            <div className="grow p-6 md:overflow-y-auto md:p-12">{children}</div>
+            <div className="grow px-4 py-6 md:overflow-y-auto md:px-12 md:py-10">
+                <div className="mx-auto max-w-6xl">{children}</div>
+            </div>
         </div>
     );
 }

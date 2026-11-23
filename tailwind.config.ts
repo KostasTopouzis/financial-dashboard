@@ -1,5 +1,10 @@
 import type { Config } from 'tailwindcss';
 
+// Semantic colors resolve to CSS variables defined by the active theme file
+// in app/ui/themes/. Keep component classes on these names so the brand
+// (and later dark mode) can change without touching components.
+const token = (name: string) => `rgb(var(--color-${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,11 +17,55 @@ const config: Config = {
         '13': 'repeat(13, minmax(0, 1fr))',
       },
       colors: {
-        blue: {
-          400: '#2589FE',
-          500: '#0070F3',
-          600: '#2F6FEB',
+        canvas: token('canvas'),
+        surface: {
+          DEFAULT: token('surface'),
+          sunken: token('surface-sunken'),
         },
+        ink: token('ink'),
+        muted: token('muted'),
+        line: {
+          DEFAULT: token('line'),
+          strong: token('line-strong'),
+        },
+        brand: {
+          DEFAULT: token('brand'),
+          deep: token('brand-deep'),
+          raised: token('brand-raised'),
+        },
+        'on-brand': {
+          DEFAULT: token('on-brand'),
+          muted: token('on-brand-muted'),
+        },
+        accent: {
+          DEFAULT: token('accent'),
+          soft: token('accent-soft'),
+        },
+        paid: {
+          bg: token('paid-bg'),
+          fg: token('paid-fg'),
+        },
+        pending: {
+          bg: token('pending-bg'),
+          fg: token('pending-fg'),
+        },
+        danger: {
+          DEFAULT: token('danger'),
+          bg: token('danger-bg'),
+        },
+        focus: token('focus'),
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Garamond', 'Georgia', 'serif'],
+        // Amounts, dates and counts. Each theme decides the face.
+        figures: ['var(--font-figures)', 'var(--font-sans)', 'monospace'],
+      },
+      borderRadius: {
+        DEFAULT: 'var(--radius)',
+      },
+      letterSpacing: {
+        label: '0.12em',
       },
     },
     keyframes: {

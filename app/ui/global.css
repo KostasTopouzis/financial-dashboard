@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-focus));
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Text inputs and selects on light surfaces */
+  .field-input {
+    @apply block w-full rounded border border-line-strong bg-surface py-2 pl-10 text-sm text-ink placeholder:text-muted focus:border-brand focus:ring-1 focus:ring-brand;
+  }
+
+  /* Small uppercase label above figures and table columns */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-label text-muted;
+  }
+}
+
 input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;

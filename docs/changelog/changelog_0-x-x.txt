@@ -1,4 +1,4 @@
-# The Acme financial dashboard changelog
+# The Ashby & Vale financial dashboard changelog
 
 v0.1.0: Initial version after completing the Next.js App Router tutorial | 2026-11-22 17:36
 
@@ -107,3 +107,63 @@ Category: tooling
 - .github/workflows/ci.yml: removed the POSTGRES_URL and AUTH_SECRET
   secrets from the build step, as the build no longer needs them.
 - package.json: version bumped to 0.1.2.
+
+
+v0.2.0: New brand identity, Ashby & Vale | 2026-11-23 13:47
+
+Category: frontend
+
+- app/ui/themes/ashby-vale.css: new theme file. Defines every color
+  (bottle green, brass, stone, status and error colors), the corner
+  radius and the font for figures as CSS variables.
+- tailwind.config.ts: replaced the tutorial blue palette with
+  semantic colors read from the theme variables (canvas, surface,
+  ink, muted, line, brand, accent, paid, pending, danger), plus
+  display/figures font families and a themeable default radius.
+- app/ui/fonts.ts: replaced Inter and Lusitana with EB Garamond
+  (headings, logo) and Source Sans 3 (text, figures), loaded as CSS
+  variables.
+- app/lib/brand.ts: new single source for the brand name, monogram,
+  tagline and description.
+- app/ui/brand-logo.tsx: new oval seal with the A&V monogram and an
+  "Ashby & Vale" wordmark. Replaces app/ui/acme-logo.tsx (deleted).
+  Exports an empty BrandPattern slot for themes with a motif.
+- app/ui/page-header.tsx: new shared page heading (eyebrow, title,
+  description, actions).
+- app/ui/global.css: global focus outline and the field-input and
+  eyebrow component classes.
+- app/layout.tsx: loads the theme and fonts. Metadata now uses the
+  brand name and description.
+- app/page.tsx: new landing page with the tagline, a sign-in link
+  and four brand principles. Tutorial text and screenshots removed.
+- app/login/page.tsx, app/ui/login-form.tsx, app/ui/button.tsx:
+  restyled sign-in page with a pending label and autocomplete hints.
+- app/dashboard/layout.tsx, app/ui/dashboard/sidenav.tsx,
+  app/ui/dashboard/nav-links.tsx: dark green sidebar with an active
+  marker. Labels are kept for screen readers on mobile, the active
+  link sets aria-current, and Home is renamed Overview.
+- app/dashboard/(overview)/page.tsx, app/ui/dashboard/cards.tsx,
+  revenue-chart.tsx, latest-invoices.tsx: "Statement of accounts"
+  overview. KPI cards with a brass rule, the latest month highlighted
+  in the chart, a screen-reader table of the chart values and empty
+  states.
+- app/dashboard/invoices/*, app/ui/invoices/*, app/ui/search.tsx:
+  restyled invoice list, table, status badges, forms, breadcrumbs
+  and pagination. Amounts are right-aligned with tabular figures,
+  icon buttons and pagination arrows have accessible names, and a
+  "No invoices found" state was added.
+- app/dashboard/invoices/error.tsx, [id]/edit/not-found.tsx: error
+  and not-found pages restyled with clearer messages.
+- app/dashboard/customers/page.tsx, app/ui/customers/table.tsx:
+  Clients page with an empty state. The table is restyled but still
+  unused.
+- app/ui/skeletons.tsx: loading placeholders restyled. The shimmer
+  is disabled when reduced motion is preferred.
+- User-facing text now says "Clients" instead of "Customers". Routes
+  are unchanged.
+
+Category: documentation
+
+- README.md: title, intro name, version (0.2.0) and New Features
+  updated to the new brand.
+- package.json: version bumped to 0.2.0.

@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { connection } from 'next/server';
 import {
   CustomerField,
   CustomersTableType,
@@ -12,6 +13,8 @@ import { formatCurrency } from './utils';
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchRevenue() {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
@@ -31,6 +34,8 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestInvoices() {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     const data = await sql<LatestInvoiceRaw[]>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -51,6 +56,8 @@ export async function fetchLatestInvoices() {
 }
 
 export async function fetchCardData() {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
@@ -90,6 +97,8 @@ export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
 ) {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
@@ -122,6 +131,8 @@ export async function fetchFilteredInvoices(
 }
 
 export async function fetchInvoicesPages(query: string) {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     const data = await sql`SELECT COUNT(*)
     FROM invoices
@@ -143,6 +154,8 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     const data = await sql<InvoiceForm[]>`
       SELECT
@@ -168,6 +181,8 @@ export async function fetchInvoiceById(id: string) {
 }
 
 export async function fetchCustomers() {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     const customers = await sql<CustomerField[]>`
       SELECT
@@ -185,6 +200,8 @@ export async function fetchCustomers() {
 }
 
 export async function fetchFilteredCustomers(query: string) {
+  // Read data at request time instead of prerendering it at build time
+  await connection();
   try {
     const data = await sql<CustomersTableType[]>`
 		SELECT

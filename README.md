@@ -1,14 +1,13 @@
-# Acme Financial Dashboard v0.1.1
+# Acme Financial Dashboard v0.1.2
 
 The Acme dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
 ## New Features
 
-v0.1.1 makes no changes to the app itself. It prepares the ground for the refactoring work:
+v0.1.2 makes no visible changes to the app:
 
-- A project README, an MIT license and a changelog for every release.
-- A docs folder with a roadmap and notes on the project.
-- A GitHub Actions workflow that lints and builds the app on every push and pull request to `main`.
+- The dashboard pages now always load their data from the database when they are opened, instead of using a copy made when the app was built.
+- The app can now be built without a database connection, so the GitHub Actions workflow no longer needs any database credentials.
 
 ## Project History 
 

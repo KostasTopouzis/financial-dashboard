@@ -90,3 +90,20 @@ Category: tooling
 - package.json: added the version field (0.1.1), the packageManager
   field (pnpm@12.14.0) and a lint script (eslint .).
 - pnpm-lock.yaml: pnpm now records its own pinned version.
+
+
+v0.1.2: Render dashboard data per request | 2026-11-23 12:24
+
+Category: architecture
+
+- app/lib/data.ts: every fetch function now calls connection() from
+  next/server before querying the database. /dashboard and
+  /dashboard/invoices/create are rendered on each request instead of
+  being prerendered at build time, so the build no longer needs a
+  database connection.
+
+Category: tooling
+
+- .github/workflows/ci.yml: removed the POSTGRES_URL and AUTH_SECRET
+  secrets from the build step, as the build no longer needs them.
+- package.json: version bumped to 0.1.2.

@@ -26,8 +26,4 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
-      # /dashboard is prerendered at build time and queries the database
       - run: pnpm build
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}

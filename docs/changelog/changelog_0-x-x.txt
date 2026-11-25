@@ -208,3 +208,50 @@ Category: documentation
   workspace dashboard page is next.
 - README.md: version (0.3.0) and New Features updated.
 - package.json: version bumped to 0.3.0.
+
+
+v0.4.0: Personal workspace for each user | 2026-11-25 13:13
+
+Category: architecture
+
+- app/lib/dal.ts: new Data Access Layer. requireUser() reads the
+  session once per request (React cache) and returns the signed-in
+  user's id, name and email, or redirects to /login.
+- app/lib/data.ts: every query calls requireUser() and filters by
+  user_id. Search conditions are grouped in parentheses so the user
+  filter always applies. Revenue is sorted by calendar month. The
+  connection() calls are removed, as reading the session already
+  renders these pages per request.
+- app/lib/actions.ts: create, update and delete invoice actions check
+  the caller with requireUser(). New invoices store the owner's id;
+  updates and deletes only match the owner's rows, and an update that
+  matches nothing returns "Invoice not found".
+- auth.config.ts: the session callback copies the user id from the
+  token into session.user.id. Signed-in users are only redirected to
+  the dashboard from / and /login, so routes like /seed still run.
+- auth.ts: authorize() returns only id, name and email, never the
+  password hash.
+- app/seed/route.ts: customers, invoices and revenue get a user_id
+  column. A composite foreign key (customer_id, user_id) stops an
+  invoice from pointing at another user's client. Revenue is keyed by
+  (user_id, month). Existing databases are upgraded in place: old
+  rows are given to the original demo user. New indexes on the
+  owner columns. All steps run in order inside one transaction, and
+  invoices are only seeded into an empty workspace, so the route can
+  be run again safely.
+- app/lib/placeholder-data.ts: every customer, invoice and revenue row
+  has an owner. Adds a second demo user (user2@nextmail.com) with
+  three clients, four invoices and its own revenue figures.
+- app/query/route.ts: removed the tutorial test endpoint.
+
+Category: frontend
+
+- app/ui/dashboard/sidenav.tsx: shows the workspace owner's name and
+  email above the navigation (hidden on mobile).
+
+Category: documentation
+
+- docs/progress.md: user workspaces done; the sign-up page is next.
+- README.md: version (0.4.0), New Features and the second demo
+  account in How to Run.
+- package.json: version bumped to 0.4.0.

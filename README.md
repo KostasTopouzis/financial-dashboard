@@ -1,25 +1,26 @@
-# Ashby & Vale Financial Dashboard v0.3.0
+# Ashby & Vale Financial Dashboard v0.4.0
 
 The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
-![Ashby & Vale Dashboard home page](/public/home-page.png)
+![Ashby & Vale Dashboard home page](/public/home-page.png "Home Page")
+**Home Page**
+
+![Ashby & Vale Dashboard overview page](/public/dashboard-page-light.png "Overview Page | Light Theme")
+**Overview Page | Light Theme**
+
+![Ashby & Vale Dashboard overview Page - dark Theme](/public/dashboard-page-dark.png "Overview Page | Dark Theme")
+**Overview Page | Dark Theme**
+
+![Ashby & Vale Dashboard invoices page](/public/invoices-page-light.png "Invoices Page | Light Theme")
+**Invoices Page | Light Theme**
 
 ## New Features
 
-v0.3.0 adds a dark mode:
+v0.4.0 gives every user a personal workspace:
 
-- A Light / Dark / System switch in the sidebar. By default the app follows your device's setting, and your choice is remembered on your next visit.
-- The page opens in the right theme straight away, without flashing light first.
-- The dark theme keeps the green and brass character on deep green-black backgrounds, with text that stays easy to read.
-
-v0.2.0 replaced the tutorial's "Acme" look with a new brand identity, Ashby & Vale:
-
-- A new name, logo and tagline ("Steady counsel for independent work."), with a deep green and brass color scheme and classic serif headings.
-- A new home page that introduces the app and links to sign-in, replacing the tutorial's welcome text.
-- A redesigned sign-in page, sidebar, overview, invoice list and invoice forms. Amounts line up in columns, and the most recent month stands out in the revenue chart.
-- Clearer messages when there are no invoices to show, when an invoice cannot be found, or when something goes wrong.
-- Better support for keyboard and screen-reader users: visible focus outlines, labels on all icon buttons, and a text version of the revenue chart.
-- The app now speaks of "clients" instead of "customers".
+- Each account sees and manages only its own clients, invoices and revenue. Another user's invoices cannot be viewed, edited or deleted, even with a direct link.
+- The sidebar shows whose workspace you are in.
+- A second demo account lets you sign in as two different users and compare their workspaces.
 
 ## Project History 
 
@@ -54,7 +55,22 @@ After the end of the refactoring process, my aim is to present the user with the
 - See at a glance who owes money and how late the payment is, grouped into 0–30, 31–60 and 60+ days overdue.
 - View a revenue chart based on the payments actually received, and narrow it down to the last 30 days, the last quarter or the last year.
 
+## Skills Demonstrated
 
+My learning goals for this project (and, therefore, the skills it is meant to demonstrate) are mostly focused in the following areas:
+
+- an overall solid grasp of React and Next.js workflows
+- overall full-stack design and integration
+- implementation of serverless programming patterns
+- database integration, data fetching and streaming
+- security concerns (authentication, validation, login mechanisms)
+- implementation of appropriate business practices
+- a solid grasp of frontend and UI/UX skills (even though not my basic priority for this project)
+- familiarity with and integration of agentic workflows in the development process
+- the ability to efficiently self-organize a project's tasks
+- the ability to begin from a basic, generic functionality and gradually provide a more expertized and distinctive application purpose.
+- basic CI/CD workflows (GitHub Actions, ci.yaml, PRs, main branch protection rulesets)
+- communication and project presentation skills (and excellent English language skills) and attention to detail
 
 ## Tech Stack
 
@@ -68,28 +84,11 @@ After the end of the refactoring process, my aim is to present the user with the
 - ![ESLint](https://img.shields.io/badge/ESLint-10-4B32C3?logo=eslint&logoColor=white)
 - ![pnpm](https://img.shields.io/badge/pnpm-12-F69220?logo=pnpm&logoColor=white)
 
-## Learning Goals
-
-- improve my experience with data fetching and API requests, and deal with the various problems that arise in the process.
-- design better solutions for potential users.
-- be able to begin from a basic, generic functionality and gradually provide a more expertized and distinctive application purpose.
-- get deeper into React and explore its potential at greater depth.
-- get an even more concrete understanding of browser behavior and debugging approaches.
-- increase my experience and familiarity with DevOps practices, CI/CD operations, and professional development workflows.
-
 ## AI-Assisted Development
 
-Claude Code was used as an AI coding assistant during the development of this project. My learning goals for this project (and, therefore, the skills it is meant to demonstrate) are mostly focused in the following areas:
+It is impossible in our times to fully separate code written by AI and human hand. Claude Code was used as an AI coding assistant during the development of this project, but my contribution is more acutely felt in the areas highlighted in the **Skills** section. And of course in setting up the project, creating its initial template, defining its purpose and requirements, directing design iterations, reviewing generated code and integrating components into the application.
 
-- overall full-stack design and integration
-- implementation of serverless programming patterns
-- data fetching from external API sources
-- security concerns (authentication, validation, login mechanisms)
-- implementation of appropriate business practices
-
-It is impossible in our times to fully separate code written by AI and human hand, but my contribution is more acutely felt in the areas above. For this project then, I take a greater share of responsibility for the code handling API requests, data manipulation/management, general backend logic and DevOps practices. And of course setting up the project and creating its initial template, defining its purpose and requirements, directing design iterations, reviewing generated code and integrating components into the application.
-
-Now, in other areas... well, besides using Claude Code as a general assistant to speed up processes, I particularly used its services for UI design exploration, visual styling, and implementation of frontend components. My usual strategy is to describe the brand/project aimed aesthetic and target audience (`docs/ai/design-directions/brand-character.md`), create or adjust the necessary skills (as found in the relevant `.claude` folder), set up guidelines and then ask it to present me with two or three alternative stylings that I can review and choose from. Then, I may tinker a bit with the code myself to refine them further.
+Since this project's main purpose wasn't so much to demonstrate UI/UX abilities, my strategy was to describe the brand/project aimed aesthetic and target audience (`docs/ai/design-directions/brand-character.md`), create or adjust the necessary skills (as found in the relevant `.claude` folder), set up guidelines and then ask Claude to present me with two or three alternative stylings that I can review and choose from. Then, I may tinker a bit with the code myself to refine them further, using my own sense of styling and appropriateness.
 
 AI-generated code was reviewed and adapted as needed. But the overall responsibility and any possible flaws of the project are mine.
 
@@ -130,10 +129,10 @@ You will need Node.js 20.9 or later, [pnpm](https://pnpm.io/) and a PostgreSQL d
 
 4. Fill the database with sample data by visiting [http://localhost:3000/seed](http://localhost:3000/seed) once. This creates the tables and adds sample users, customers, invoices and revenue.
 
-5. Open [http://localhost:3000](http://localhost:3000) and log in with the sample account:
+5. Open [http://localhost:3000](http://localhost:3000) and log in with one of the sample accounts. Each has its own workspace:
 
-   - Email: `user@nextmail.com`
-   - Password: `123456`
+   - Email: `user@nextmail.com`, password: `123456`
+   - Email: `user2@nextmail.com`, password: `123456`
 
 To try a production build instead, run `pnpm build` followed by `pnpm start`.
 

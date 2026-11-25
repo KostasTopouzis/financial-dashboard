@@ -1,10 +1,16 @@
-# Ashby & Vale Financial Dashboard v0.3.0
+# Ashby & Vale Financial Dashboard v0.4.0
 
 The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
 ![Ashby & Vale Dashboard home page](/public/home-page.png)
 
 ## New Features
+
+v0.4.0 gives every user a personal workspace:
+
+- Each account sees and manages only its own clients, invoices and revenue. Another user's invoices cannot be viewed, edited or deleted, even with a direct link.
+- The sidebar shows whose workspace you are in.
+- A second demo account lets you sign in as two different users and compare their workspaces.
 
 v0.3.0 adds a dark mode:
 
@@ -130,10 +136,10 @@ You will need Node.js 20.9 or later, [pnpm](https://pnpm.io/) and a PostgreSQL d
 
 4. Fill the database with sample data by visiting [http://localhost:3000/seed](http://localhost:3000/seed) once. This creates the tables and adds sample users, customers, invoices and revenue.
 
-5. Open [http://localhost:3000](http://localhost:3000) and log in with the sample account:
+5. Open [http://localhost:3000](http://localhost:3000) and log in with one of the sample accounts. Each has its own workspace:
 
-   - Email: `user@nextmail.com`
-   - Password: `123456`
+   - Email: `user@nextmail.com`, password: `123456`
+   - Email: `user2@nextmail.com`, password: `123456`
 
 To try a production build instead, run `pnpm build` followed by `pnpm start`.
 

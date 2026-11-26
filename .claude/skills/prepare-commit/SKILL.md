@@ -14,7 +14,7 @@ Inspect the pending changes (`git status`, `git diff`, `git diff --staged`) and 
 
 ### 2. Update the changelog
 
-The `docs/changelog/` folder contains .txt files in the format `changelog_0-x-x.txt`, `changelog_1-x-x.txt`, etc. Each file is a changelog devoted to the corresponding major release number of the application. Add an entry with a synopsis of the newest changes to the log for the current major version. If the change itself changes the major number, create a new changelog file in the same format.
+The `docs/changelog/` folder contains .txt files in the format `changelog_0-x-x.txt`, `changelog_1-x-x.txt`, etc. Each file is a changelog devoted to the corresponding major release number of the application. Add an entry with a synopsis of the newest changes to the log for the current major version. If the change itself changes the major number, create a new changelog file in the same format. Newest entries go up.
 
 Format:
 

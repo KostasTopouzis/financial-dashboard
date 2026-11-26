@@ -1,4 +1,4 @@
-# Ashby & Vale Financial Dashboard v0.6.0
+# Ashby & Vale Financial Dashboard v0.6.1
 
 The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
@@ -16,12 +16,10 @@ The Ashby & Vale dashboard is a freelancer dashboard app that in its final versi
 
 ## New Features
 
-v0.6.0 lets anyone create their own account:
+v0.6.1 gives Ashby & Vale its own browser icon:
 
-- Sign up with your name, email and a password from the home page or the sign-in page, and you are taken straight into your own new, empty workspace.
-- Passwords must be at least 8 characters long and are typed twice, so a typo can't lock you out. They are stored only as secure hashes.
-- Each email address can have only one account. Upper and lower case don't matter, so `Amy@example.com` and `amy@example.com` are the same account, and you can sign in with either.
-- If something needs fixing, the form says what and where, and keeps your name and email so you don't have to type them again.
+- Browser tabs, bookmarks and history now show the Ashby & Vale mark: a cream A and V joined by a shared stroke, with a brass crossbar, on bottle green.
+- Adding the dashboard to an iPhone or iPad home screen shows the same mark.
 
 ## Project History 
 

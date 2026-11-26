@@ -3,4 +3,4 @@
 3. Create User Workspace Dashboard Page.
 4. Complete Customer Page.
 5. Add Sign-up page and mechanism.
-6. NEXT: Create favicon.
+6. Create favicon.

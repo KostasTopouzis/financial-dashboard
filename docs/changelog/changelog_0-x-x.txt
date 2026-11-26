@@ -1,260 +1,68 @@
 # The Ashby & Vale financial dashboard changelog
 
-v0.1.0: Initial version after completing the Next.js App Router tutorial | 2026-11-22 17:36
-
-Category: architecture
-
-- Next.js App Router project (React 19, TypeScript, Tailwind CSS)
-  with a Postgres database reached through the postgres client over
-  SSL, using the POSTGRES_URL environment variable.
-- app/layout.tsx: root layout with the Inter font, global styles and
-  shared metadata (title template "%s | Acme Dashboard",
-  description, metadataBase). Each page sets its own title.
-- app/dashboard/layout.tsx: shared dashboard shell with the SideNav
-  (navigation links and a sign-out button) and the page content.
-- app/lib/data.ts: server-side read queries for revenue, latest
-  invoices, card totals, filtered and paginated invoices (6 per
-  page), a single invoice and customers. Card totals run three
-  queries in parallel with Promise.all.
-- app/lib/actions.ts: Server Actions for creating, updating and
-  deleting invoices. Form data is validated with Zod, amounts are
-  stored in cents, field errors are returned to the form, and the
-  invoices page is revalidated and redirected to on success. Also
-  holds authenticate(), which signs users in with credentials.
-- app/lib/definitions.ts and app/lib/utils.ts: shared types and
-  helpers (currency and date formatting, revenue chart y-axis
-  labels, pagination numbers).
-- app/dashboard/(overview)/page.tsx: dashboard overview that streams
-  the KPI cards, revenue chart and latest invoices separately inside
-  Suspense boundaries, with skeletons and a route-level loading.tsx.
-- app/dashboard/invoices/page.tsx: invoice list driven by the query
-  and page URL search parameters. The search input updates the URL
-  with a 300 ms debounce, and the table is wrapped in Suspense with
-  a skeleton fallback.
-- app/dashboard/invoices/create and [id]/edit: invoice forms built on
-  useActionState, with per-field error messages linked through
-  aria-describedby. The edit page loads the invoice and customers in
-  parallel and calls notFound() for unknown ids.
-- app/dashboard/invoices/error.tsx and [id]/edit/not-found.tsx:
-  error boundary with a retry button and a 404 page for invoices.
-- auth.config.ts, auth.ts and proxy.ts: NextAuth.js v5 with a
-  Credentials provider. Credentials are validated with Zod, users are
-  looked up in the users table and passwords are compared with
-  bcrypt. The proxy protects /dashboard and sends signed-in users
-  away from /login.
-- app/login/page.tsx and app/ui/login-form.tsx: login page with a
-  pending state and an error message for invalid credentials.
-- app/seed/route.ts: GET /seed creates the users, customers,
-  invoices and revenue tables and fills them with placeholder data
-  in a single transaction, hashing user passwords with bcrypt.
-- app/query/route.ts: GET /query, a test endpoint from the tutorial
-  that returns the invoices with an amount of 666.
-- app/dashboard/customers/page.tsx: placeholder Customers page. The
-  fetchFilteredCustomers() query exists but is not used yet.
+v0.6.1: Favicon with the A and V ligature | 2026-11-26 15:26
 
 Category: frontend
 
-- Generic design and brand identity provided by the tutorial itself.
-
-v0.1.1: Project documentation and development tooling | 2026-11-23 11:48
+- app/icon.svg: new vector favicon. A bottle-green tile with a cream
+  A and V that share one stroke, and a brass crossbar on the A. The
+  letters are drawn as shapes, not set in a font, so the icon looks
+  the same in every browser.
+- app/favicon.ico: the tutorial icon is replaced by the new mark at
+  16, 32 and 48 pixels, for browsers that do not use the SVG.
+- app/apple-icon.png: new 180 pixel icon for iPhone and iPad home
+  screens, square so iOS can round the corners itself.
 
 Category: documentation
 
-- README.md: replaced the tutorial starter text with a project
-  README (history, purpose, current and planned functionality, tech
-  stack, learning goals, AI-assisted development, how to run,
-  license and contact). Added the version number and a New Features
-  section.
-- LICENSE: added the MIT License.
-- public/home-page.png: home page screenshot used in the README.
-- docs/changelog/changelog_0-x-x.txt: new changelog for the 0.x.x
-  releases, with the v0.1.0 tutorial baseline and this entry.
-- docs/progress.md: roadmap of the next refactoring steps.
-- docs/problems_faced.md, docs/to_fix.md, docs/to_improve.md: empty
-  placeholders for project notes.
-- docs/skills_improved.md, docs/topics_explored.md: reworded and
-  extended the learning notes (clsx, Tailwind, file-system routing).
-- docs/ai/: brand character and app purpose drafts used as
-  guidance for AI-assisted design work.
+- docs/changelog/changelog_0-x-x.txt: entries reordered so the newest
+  is at the top.
+- docs/progress.md: favicon done.
+- README.md: version (0.6.1) and New Features.
+- package.json: version bumped to 0.6.1.
 
 Category: tooling
 
-- CLAUDE.md: project instructions for Claude Code (Git rules).
-- .claude/skills/: project skills for backend/API review, frontend
-  design, UI review, README writing and commit preparation.
-- .github/workflows/ci.yml: GitHub Actions workflow that installs
-  dependencies with pnpm, lints and builds on pushes and pull
-  requests to main. The build reads POSTGRES_URL and AUTH_SECRET
-  from repository secrets, since /dashboard is prerendered against
-  the database.
-- package.json: added the version field (0.1.1), the packageManager
-  field (pnpm@12.14.0) and a lint script (eslint .).
-- pnpm-lock.yaml: pnpm now records its own pinned version.
+- .claude/skills/prepare-commit/SKILL.md: states that new changelog
+  entries go at the top.
 
 
-v0.1.2: Render dashboard data per request | 2026-11-23 12:24
+v0.6.0: Sign-up page and account creation | 2026-11-26 15:02
 
 Category: architecture
 
-- app/lib/data.ts: every fetch function now calls connection() from
-  next/server before querying the database. /dashboard and
-  /dashboard/invoices/create are rendered on each request instead of
-  being prerendered at build time, so the build no longer needs a
-  database connection.
-
-Category: tooling
-
-- .github/workflows/ci.yml: removed the POSTGRES_URL and AUTH_SECRET
-  secrets from the build step, as the build no longer needs them.
-- package.json: version bumped to 0.1.2.
-
-
-v0.2.0: New brand identity, Ashby & Vale | 2026-11-23 13:47
-
-Category: frontend
-
-- app/ui/themes/ashby-vale.css: new theme file. Defines every color
-  (bottle green, brass, stone, status and error colors), the corner
-  radius and the font for figures as CSS variables.
-- tailwind.config.ts: replaced the tutorial blue palette with
-  semantic colors read from the theme variables (canvas, surface,
-  ink, muted, line, brand, accent, paid, pending, danger), plus
-  display/figures font families and a themeable default radius.
-- app/ui/fonts.ts: replaced Inter and Lusitana with EB Garamond
-  (headings, logo) and Source Sans 3 (text, figures), loaded as CSS
-  variables.
-- app/lib/brand.ts: new single source for the brand name, monogram,
-  tagline and description.
-- app/ui/brand-logo.tsx: new oval seal with the A&V monogram and an
-  "Ashby & Vale" wordmark. Replaces app/ui/acme-logo.tsx (deleted).
-  Exports an empty BrandPattern slot for themes with a motif.
-- app/ui/page-header.tsx: new shared page heading (eyebrow, title,
-  description, actions).
-- app/ui/global.css: global focus outline and the field-input and
-  eyebrow component classes.
-- app/layout.tsx: loads the theme and fonts. Metadata now uses the
-  brand name and description.
-- app/page.tsx: new landing page with the tagline, a sign-in link
-  and four brand principles. Tutorial text and screenshots removed.
-- app/login/page.tsx, app/ui/login-form.tsx, app/ui/button.tsx:
-  restyled sign-in page with a pending label and autocomplete hints.
-- app/dashboard/layout.tsx, app/ui/dashboard/sidenav.tsx,
-  app/ui/dashboard/nav-links.tsx: dark green sidebar with an active
-  marker. Labels are kept for screen readers on mobile, the active
-  link sets aria-current, and Home is renamed Overview.
-- app/dashboard/(overview)/page.tsx, app/ui/dashboard/cards.tsx,
-  revenue-chart.tsx, latest-invoices.tsx: "Statement of accounts"
-  overview. KPI cards with a brass rule, the latest month highlighted
-  in the chart, a screen-reader table of the chart values and empty
-  states.
-- app/dashboard/invoices/*, app/ui/invoices/*, app/ui/search.tsx:
-  restyled invoice list, table, status badges, forms, breadcrumbs
-  and pagination. Amounts are right-aligned with tabular figures,
-  icon buttons and pagination arrows have accessible names, and a
-  "No invoices found" state was added.
-- app/dashboard/invoices/error.tsx, [id]/edit/not-found.tsx: error
-  and not-found pages restyled with clearer messages.
-- app/dashboard/customers/page.tsx, app/ui/customers/table.tsx:
-  Clients page with an empty state. The table is restyled but still
-  unused.
-- app/ui/skeletons.tsx: loading placeholders restyled. The shimmer
-  is disabled when reduced motion is preferred.
-- User-facing text now says "Clients" instead of "Customers". Routes
-  are unchanged.
-
-Category: documentation
-
-- README.md: title, intro name, version (0.2.0) and New Features
-  updated to the new brand.
-- package.json: version bumped to 0.2.0.
-
-
-v0.3.0: Dark mode with a Light / Dark / System switcher | 2026-11-23 14:39
+- app/lib/actions.ts: new signUp Server Action. Validates with Zod
+  (trimmed name up to 100 characters, a valid email kept exactly as
+  typed, a password of 8 characters to 72 bytes, bcrypt's limit, and
+  a matching confirmation), hashes the password with bcrypt (cost
+  10) and inserts the user. A duplicate email is caught through the
+  unique constraint (Postgres 23505) rather than a lookup first,
+  which avoids a race between two sign-ups. The new user is then
+  signed in and sent to /dashboard. Typed name and email are sent
+  back after a failed submit; passwords never are.
+- app/seed/route.ts: adds a unique index on lower(email) to users,
+  so two accounts can't differ only by letter case. Existing
+  databases get it the next time /seed is visited.
+- auth.ts: login looks users up by lower(email), so an address
+  matches whatever case it was typed in, using the new index.
+- auth.config.ts: signed-in users visiting /signup are redirected to
+  the dashboard, as they already were for / and /login.
 
 Category: frontend
 
-- app/lib/theme.ts: new theme module. The preference (light, dark or
-  system) is stored in localStorage, and the resolved theme is set on
-  <html data-theme>. An inline script applies it before the first
-  paint (no flash of the wrong theme), follows OS changes while the
-  preference is "system" and syncs other tabs. Falls back to an
-  in-memory preference when storage is blocked.
-- app/ui/theme-switcher.tsx: new segmented Light / Dark / System
-  control built on visually hidden native radios, read through
-  useSyncExternalStore to avoid hydration mismatches.
-- app/ui/dashboard/sidenav.tsx: theme switcher added above the
-  sign-out button.
-- app/layout.tsx: inlines the theme script in <head>, suppresses the
-  expected hydration warning on <html> and sets color-scheme and
-  light/dark theme-color through the viewport export.
-- app/ui/themes/ashby-vale.css: dark token block under
-  [data-theme='dark'] (green-black surfaces, lightened brass and
-  status colors, WCAG AA text contrast). New primary, primary-hover
-  and on-primary tokens split actions from brand panels.
-- tailwind.config.ts: primary and on-primary colors, and dark: now
-  follows the data-theme attribute instead of the OS media query.
-- app/ui/global.css: new field-radio class so radios use theme
-  tokens; field-input focus uses the primary color.
-- app/ui/button.tsx, app/ui/invoices/buttons.tsx,
-  app/ui/invoices/pagination.tsx, app/ui/dashboard/revenue-chart.tsx,
-  app/dashboard/invoices/error.tsx, [id]/edit/not-found.tsx: buttons,
-  the active page and chart bars use the primary tokens.
-- app/ui/invoices/create-form.tsx, edit-form.tsx: status radios use
-  field-radio.
+- app/signup/page.tsx, app/ui/signup-form.tsx: new sign-up page with
+  the same layout as the login page. Name, email, password and
+  password confirmation, each with its own error message announced
+  to screen readers, browser-side checks before submitting, and
+  autocomplete hints for password managers.
+- app/ui/login-form.tsx: "Create an account" link to /signup.
+- app/page.tsx: "Create an account" link next to the sign-in button.
 
 Category: documentation
 
-- docs/progress.md: brand identity and dark mode done; the user
-  workspace dashboard page is next.
-- README.md: version (0.3.0) and New Features updated.
-- package.json: version bumped to 0.3.0.
-
-
-v0.4.0: Personal workspace for each user | 2026-11-25 13:13
-
-Category: architecture
-
-- app/lib/dal.ts: new Data Access Layer. requireUser() reads the
-  session once per request (React cache) and returns the signed-in
-  user's id, name and email, or redirects to /login.
-- app/lib/data.ts: every query calls requireUser() and filters by
-  user_id. Search conditions are grouped in parentheses so the user
-  filter always applies. Revenue is sorted by calendar month. The
-  connection() calls are removed, as reading the session already
-  renders these pages per request.
-- app/lib/actions.ts: create, update and delete invoice actions check
-  the caller with requireUser(). New invoices store the owner's id;
-  updates and deletes only match the owner's rows, and an update that
-  matches nothing returns "Invoice not found".
-- auth.config.ts: the session callback copies the user id from the
-  token into session.user.id. Signed-in users are only redirected to
-  the dashboard from / and /login, so routes like /seed still run.
-- auth.ts: authorize() returns only id, name and email, never the
-  password hash.
-- app/seed/route.ts: customers, invoices and revenue get a user_id
-  column. A composite foreign key (customer_id, user_id) stops an
-  invoice from pointing at another user's client. Revenue is keyed by
-  (user_id, month). Existing databases are upgraded in place: old
-  rows are given to the original demo user. New indexes on the
-  owner columns. All steps run in order inside one transaction, and
-  invoices are only seeded into an empty workspace, so the route can
-  be run again safely.
-- app/lib/placeholder-data.ts: every customer, invoice and revenue row
-  has an owner. Adds a second demo user (user2@nextmail.com) with
-  three clients, four invoices and its own revenue figures.
-- app/query/route.ts: removed the tutorial test endpoint.
-
-Category: frontend
-
-- app/ui/dashboard/sidenav.tsx: shows the workspace owner's name and
-  email above the navigation (hidden on mobile).
-
-Category: documentation
-
-- docs/progress.md: user workspaces done; the sign-up page is next.
-- README.md: version (0.4.0), New Features and the second demo
-  account in How to Run.
-- package.json: version bumped to 0.4.0.
+- docs/progress.md: sign-up done; the favicon is next.
+- README.md: version (0.6.0) and New Features.
+- package.json: version bumped to 0.6.0.
 
 
 v0.5.0: Client management and client page | 2026-11-26 13:29
@@ -333,39 +141,260 @@ Category: documentation
   variables in How to Run.
 - package.json: version bumped to 0.5.0.
 
-v0.6.0: Sign-up page and account creation | 2026-11-26 15:02
+
+v0.4.0: Personal workspace for each user | 2026-11-25 13:13
 
 Category: architecture
 
-- app/lib/actions.ts: new signUp Server Action. Validates with Zod
-  (trimmed name up to 100 characters, a valid email kept exactly as
-  typed, a password of 8 characters to 72 bytes, bcrypt's limit, and
-  a matching confirmation), hashes the password with bcrypt (cost
-  10) and inserts the user. A duplicate email is caught through the
-  unique constraint (Postgres 23505) rather than a lookup first,
-  which avoids a race between two sign-ups. The new user is then
-  signed in and sent to /dashboard. Typed name and email are sent
-  back after a failed submit; passwords never are.
-- app/seed/route.ts: adds a unique index on lower(email) to users,
-  so two accounts can't differ only by letter case. Existing
-  databases get it the next time /seed is visited.
-- auth.ts: login looks users up by lower(email), so an address
-  matches whatever case it was typed in, using the new index.
-- auth.config.ts: signed-in users visiting /signup are redirected to
-  the dashboard, as they already were for / and /login.
+- app/lib/dal.ts: new Data Access Layer. requireUser() reads the
+  session once per request (React cache) and returns the signed-in
+  user's id, name and email, or redirects to /login.
+- app/lib/data.ts: every query calls requireUser() and filters by
+  user_id. Search conditions are grouped in parentheses so the user
+  filter always applies. Revenue is sorted by calendar month. The
+  connection() calls are removed, as reading the session already
+  renders these pages per request.
+- app/lib/actions.ts: create, update and delete invoice actions check
+  the caller with requireUser(). New invoices store the owner's id;
+  updates and deletes only match the owner's rows, and an update that
+  matches nothing returns "Invoice not found".
+- auth.config.ts: the session callback copies the user id from the
+  token into session.user.id. Signed-in users are only redirected to
+  the dashboard from / and /login, so routes like /seed still run.
+- auth.ts: authorize() returns only id, name and email, never the
+  password hash.
+- app/seed/route.ts: customers, invoices and revenue get a user_id
+  column. A composite foreign key (customer_id, user_id) stops an
+  invoice from pointing at another user's client. Revenue is keyed by
+  (user_id, month). Existing databases are upgraded in place: old
+  rows are given to the original demo user. New indexes on the
+  owner columns. All steps run in order inside one transaction, and
+  invoices are only seeded into an empty workspace, so the route can
+  be run again safely.
+- app/lib/placeholder-data.ts: every customer, invoice and revenue row
+  has an owner. Adds a second demo user (user2@nextmail.com) with
+  three clients, four invoices and its own revenue figures.
+- app/query/route.ts: removed the tutorial test endpoint.
 
 Category: frontend
 
-- app/signup/page.tsx, app/ui/signup-form.tsx: new sign-up page with
-  the same layout as the login page. Name, email, password and
-  password confirmation, each with its own error message announced
-  to screen readers, browser-side checks before submitting, and
-  autocomplete hints for password managers.
-- app/ui/login-form.tsx: "Create an account" link to /signup.
-- app/page.tsx: "Create an account" link next to the sign-in button.
+- app/ui/dashboard/sidenav.tsx: shows the workspace owner's name and
+  email above the navigation (hidden on mobile).
 
 Category: documentation
 
-- docs/progress.md: sign-up done; the favicon is next.
-- README.md: version (0.6.0) and New Features.
-- package.json: version bumped to 0.6.0.
+- docs/progress.md: user workspaces done; the sign-up page is next.
+- README.md: version (0.4.0), New Features and the second demo
+  account in How to Run.
+- package.json: version bumped to 0.4.0.
+
+
+v0.3.0: Dark mode with a Light / Dark / System switcher | 2026-11-23 14:39
+
+Category: frontend
+
+- app/lib/theme.ts: new theme module. The preference (light, dark or
+  system) is stored in localStorage, and the resolved theme is set on
+  <html data-theme>. An inline script applies it before the first
+  paint (no flash of the wrong theme), follows OS changes while the
+  preference is "system" and syncs other tabs. Falls back to an
+  in-memory preference when storage is blocked.
+- app/ui/theme-switcher.tsx: new segmented Light / Dark / System
+  control built on visually hidden native radios, read through
+  useSyncExternalStore to avoid hydration mismatches.
+- app/ui/dashboard/sidenav.tsx: theme switcher added above the
+  sign-out button.
+- app/layout.tsx: inlines the theme script in <head>, suppresses the
+  expected hydration warning on <html> and sets color-scheme and
+  light/dark theme-color through the viewport export.
+- app/ui/themes/ashby-vale.css: dark token block under
+  [data-theme='dark'] (green-black surfaces, lightened brass and
+  status colors, WCAG AA text contrast). New primary, primary-hover
+  and on-primary tokens split actions from brand panels.
+- tailwind.config.ts: primary and on-primary colors, and dark: now
+  follows the data-theme attribute instead of the OS media query.
+- app/ui/global.css: new field-radio class so radios use theme
+  tokens; field-input focus uses the primary color.
+- app/ui/button.tsx, app/ui/invoices/buttons.tsx,
+  app/ui/invoices/pagination.tsx, app/ui/dashboard/revenue-chart.tsx,
+  app/dashboard/invoices/error.tsx, [id]/edit/not-found.tsx: buttons,
+  the active page and chart bars use the primary tokens.
+- app/ui/invoices/create-form.tsx, edit-form.tsx: status radios use
+  field-radio.
+
+Category: documentation
+
+- docs/progress.md: brand identity and dark mode done; the user
+  workspace dashboard page is next.
+- README.md: version (0.3.0) and New Features updated.
+- package.json: version bumped to 0.3.0.
+
+
+v0.2.0: New brand identity, Ashby & Vale | 2026-11-23 13:47
+
+Category: frontend
+
+- app/ui/themes/ashby-vale.css: new theme file. Defines every color
+  (bottle green, brass, stone, status and error colors), the corner
+  radius and the font for figures as CSS variables.
+- tailwind.config.ts: replaced the tutorial blue palette with
+  semantic colors read from the theme variables (canvas, surface,
+  ink, muted, line, brand, accent, paid, pending, danger), plus
+  display/figures font families and a themeable default radius.
+- app/ui/fonts.ts: replaced Inter and Lusitana with EB Garamond
+  (headings, logo) and Source Sans 3 (text, figures), loaded as CSS
+  variables.
+- app/lib/brand.ts: new single source for the brand name, monogram,
+  tagline and description.
+- app/ui/brand-logo.tsx: new oval seal with the A&V monogram and an
+  "Ashby & Vale" wordmark. Replaces app/ui/acme-logo.tsx (deleted).
+  Exports an empty BrandPattern slot for themes with a motif.
+- app/ui/page-header.tsx: new shared page heading (eyebrow, title,
+  description, actions).
+- app/ui/global.css: global focus outline and the field-input and
+  eyebrow component classes.
+- app/layout.tsx: loads the theme and fonts. Metadata now uses the
+  brand name and description.
+- app/page.tsx: new landing page with the tagline, a sign-in link
+  and four brand principles. Tutorial text and screenshots removed.
+- app/login/page.tsx, app/ui/login-form.tsx, app/ui/button.tsx:
+  restyled sign-in page with a pending label and autocomplete hints.
+- app/dashboard/layout.tsx, app/ui/dashboard/sidenav.tsx,
+  app/ui/dashboard/nav-links.tsx: dark green sidebar with an active
+  marker. Labels are kept for screen readers on mobile, the active
+  link sets aria-current, and Home is renamed Overview.
+- app/dashboard/(overview)/page.tsx, app/ui/dashboard/cards.tsx,
+  revenue-chart.tsx, latest-invoices.tsx: "Statement of accounts"
+  overview. KPI cards with a brass rule, the latest month highlighted
+  in the chart, a screen-reader table of the chart values and empty
+  states.
+- app/dashboard/invoices/*, app/ui/invoices/*, app/ui/search.tsx:
+  restyled invoice list, table, status badges, forms, breadcrumbs
+  and pagination. Amounts are right-aligned with tabular figures,
+  icon buttons and pagination arrows have accessible names, and a
+  "No invoices found" state was added.
+- app/dashboard/invoices/error.tsx, [id]/edit/not-found.tsx: error
+  and not-found pages restyled with clearer messages.
+- app/dashboard/customers/page.tsx, app/ui/customers/table.tsx:
+  Clients page with an empty state. The table is restyled but still
+  unused.
+- app/ui/skeletons.tsx: loading placeholders restyled. The shimmer
+  is disabled when reduced motion is preferred.
+- User-facing text now says "Clients" instead of "Customers". Routes
+  are unchanged.
+
+Category: documentation
+
+- README.md: title, intro name, version (0.2.0) and New Features
+  updated to the new brand.
+- package.json: version bumped to 0.2.0.
+
+
+v0.1.2: Render dashboard data per request | 2026-11-23 12:24
+
+Category: architecture
+
+- app/lib/data.ts: every fetch function now calls connection() from
+  next/server before querying the database. /dashboard and
+  /dashboard/invoices/create are rendered on each request instead of
+  being prerendered at build time, so the build no longer needs a
+  database connection.
+
+Category: tooling
+
+- .github/workflows/ci.yml: removed the POSTGRES_URL and AUTH_SECRET
+  secrets from the build step, as the build no longer needs them.
+- package.json: version bumped to 0.1.2.
+
+
+v0.1.1: Project documentation and development tooling | 2026-11-23 11:48
+
+Category: documentation
+
+- README.md: replaced the tutorial starter text with a project
+  README (history, purpose, current and planned functionality, tech
+  stack, learning goals, AI-assisted development, how to run,
+  license and contact). Added the version number and a New Features
+  section.
+- LICENSE: added the MIT License.
+- public/home-page.png: home page screenshot used in the README.
+- docs/changelog/changelog_0-x-x.txt: new changelog for the 0.x.x
+  releases, with the v0.1.0 tutorial baseline and this entry.
+- docs/progress.md: roadmap of the next refactoring steps.
+- docs/problems_faced.md, docs/to_fix.md, docs/to_improve.md: empty
+  placeholders for project notes.
+- docs/skills_improved.md, docs/topics_explored.md: reworded and
+  extended the learning notes (clsx, Tailwind, file-system routing).
+- docs/ai/: brand character and app purpose drafts used as
+  guidance for AI-assisted design work.
+
+Category: tooling
+
+- CLAUDE.md: project instructions for Claude Code (Git rules).
+- .claude/skills/: project skills for backend/API review, frontend
+  design, UI review, README writing and commit preparation.
+- .github/workflows/ci.yml: GitHub Actions workflow that installs
+  dependencies with pnpm, lints and builds on pushes and pull
+  requests to main. The build reads POSTGRES_URL and AUTH_SECRET
+  from repository secrets, since /dashboard is prerendered against
+  the database.
+- package.json: added the version field (0.1.1), the packageManager
+  field (pnpm@12.14.0) and a lint script (eslint .).
+- pnpm-lock.yaml: pnpm now records its own pinned version.
+
+
+v0.1.0: Initial version after completing the Next.js App Router tutorial | 2026-11-22 17:36
+
+Category: architecture
+
+- Next.js App Router project (React 19, TypeScript, Tailwind CSS)
+  with a Postgres database reached through the postgres client over
+  SSL, using the POSTGRES_URL environment variable.
+- app/layout.tsx: root layout with the Inter font, global styles and
+  shared metadata (title template "%s | Acme Dashboard",
+  description, metadataBase). Each page sets its own title.
+- app/dashboard/layout.tsx: shared dashboard shell with the SideNav
+  (navigation links and a sign-out button) and the page content.
+- app/lib/data.ts: server-side read queries for revenue, latest
+  invoices, card totals, filtered and paginated invoices (6 per
+  page), a single invoice and customers. Card totals run three
+  queries in parallel with Promise.all.
+- app/lib/actions.ts: Server Actions for creating, updating and
+  deleting invoices. Form data is validated with Zod, amounts are
+  stored in cents, field errors are returned to the form, and the
+  invoices page is revalidated and redirected to on success. Also
+  holds authenticate(), which signs users in with credentials.
+- app/lib/definitions.ts and app/lib/utils.ts: shared types and
+  helpers (currency and date formatting, revenue chart y-axis
+  labels, pagination numbers).
+- app/dashboard/(overview)/page.tsx: dashboard overview that streams
+  the KPI cards, revenue chart and latest invoices separately inside
+  Suspense boundaries, with skeletons and a route-level loading.tsx.
+- app/dashboard/invoices/page.tsx: invoice list driven by the query
+  and page URL search parameters. The search input updates the URL
+  with a 300 ms debounce, and the table is wrapped in Suspense with
+  a skeleton fallback.
+- app/dashboard/invoices/create and [id]/edit: invoice forms built on
+  useActionState, with per-field error messages linked through
+  aria-describedby. The edit page loads the invoice and customers in
+  parallel and calls notFound() for unknown ids.
+- app/dashboard/invoices/error.tsx and [id]/edit/not-found.tsx:
+  error boundary with a retry button and a 404 page for invoices.
+- auth.config.ts, auth.ts and proxy.ts: NextAuth.js v5 with a
+  Credentials provider. Credentials are validated with Zod, users are
+  looked up in the users table and passwords are compared with
+  bcrypt. The proxy protects /dashboard and sends signed-in users
+  away from /login.
+- app/login/page.tsx and app/ui/login-form.tsx: login page with a
+  pending state and an error message for invalid credentials.
+- app/seed/route.ts: GET /seed creates the users, customers,
+  invoices and revenue tables and fills them with placeholder data
+  in a single transaction, hashing user passwords with bcrypt.
+- app/query/route.ts: GET /query, a test endpoint from the tutorial
+  that returns the invoices with an amount of 666.
+- app/dashboard/customers/page.tsx: placeholder Customers page. The
+  fetchFilteredCustomers() query exists but is not used yet.
+
+Category: frontend
+
+- Generic design and brand identity provided by the tutorial itself.

@@ -9,9 +9,10 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const { pathname } = nextUrl;
       const isOnDashboard = pathname.startsWith('/dashboard');
-      // Only the home and login pages send a signed-in user on to the
-      // dashboard. Other routes, such as /seed, must still run for them.
-      const isEntryPage = pathname === '/' || pathname === '/login';
+      // Only the home, login and sign-up pages send a signed-in user on to
+      // the dashboard. Other routes, such as /seed, must still run for them.
+      const isEntryPage =
+        pathname === '/' || pathname === '/login' || pathname === '/signup';
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page

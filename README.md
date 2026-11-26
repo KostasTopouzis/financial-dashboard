@@ -1,8 +1,8 @@
-# Ashby & Vale Financial Dashboard v0.5.0
+# Ashby & Vale Financial Dashboard v0.6.0
 
 The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
-![Ashby & Vale Dashboard home page](/public/home-page.png "Home Page")
+![Ashby & Vale Dashboard home page](/public/home-page-signup.png "Home Page")
 **Home Page**
 
 ![Ashby & Vale Dashboard overview page](/public/dashboard-page-light.png "Overview Page | Light Theme")
@@ -16,13 +16,12 @@ The Ashby & Vale dashboard is a freelancer dashboard app that in its final versi
 
 ## New Features
 
-v0.5.0 adds full client management:
+v0.6.0 lets anyone create their own account:
 
-- Add, edit and delete clients, with an optional photo (PNG, JPEG or WebP, up to 1 MB).
-- Each client has their own page showing how much they have been billed, how much has been collected and how much is outstanding, along with their full invoice history.
-- Start a new invoice from a client's page with that client already selected.
-- A client who still has invoices can't be deleted, so no invoice is ever left without a client. Deleting any other client asks for confirmation first.
-- Each email address can belong to only one client in your workspace.
+- Sign up with your name, email and a password from the home page or the sign-in page, and you are taken straight into your own new, empty workspace.
+- Passwords must be at least 8 characters long and are typed twice, so a typo can't lock you out. They are stored only as secure hashes.
+- Each email address can have only one account. Upper and lower case don't matter, so `Amy@example.com` and `amy@example.com` are the same account, and you can sign in with either.
+- If something needs fixing, the form says what and where, and keeps your name and email so you don't have to type them again.
 
 ## Project History 
 

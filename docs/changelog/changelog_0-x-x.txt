@@ -332,3 +332,40 @@ Category: documentation
 - README.md: version (0.5.0), New Features, and the Supabase Storage
   variables in How to Run.
 - package.json: version bumped to 0.5.0.
+
+v0.6.0: Sign-up page and account creation | 2026-11-26 15:02
+
+Category: architecture
+
+- app/lib/actions.ts: new signUp Server Action. Validates with Zod
+  (trimmed name up to 100 characters, a valid email kept exactly as
+  typed, a password of 8 characters to 72 bytes, bcrypt's limit, and
+  a matching confirmation), hashes the password with bcrypt (cost
+  10) and inserts the user. A duplicate email is caught through the
+  unique constraint (Postgres 23505) rather than a lookup first,
+  which avoids a race between two sign-ups. The new user is then
+  signed in and sent to /dashboard. Typed name and email are sent
+  back after a failed submit; passwords never are.
+- app/seed/route.ts: adds a unique index on lower(email) to users,
+  so two accounts can't differ only by letter case. Existing
+  databases get it the next time /seed is visited.
+- auth.ts: login looks users up by lower(email), so an address
+  matches whatever case it was typed in, using the new index.
+- auth.config.ts: signed-in users visiting /signup are redirected to
+  the dashboard, as they already were for / and /login.
+
+Category: frontend
+
+- app/signup/page.tsx, app/ui/signup-form.tsx: new sign-up page with
+  the same layout as the login page. Name, email, password and
+  password confirmation, each with its own error message announced
+  to screen readers, browser-side checks before submitting, and
+  autocomplete hints for password managers.
+- app/ui/login-form.tsx: "Create an account" link to /signup.
+- app/page.tsx: "Create an account" link next to the sign-in button.
+
+Category: documentation
+
+- docs/progress.md: sign-up done; the favicon is next.
+- README.md: version (0.6.0) and New Features.
+- package.json: version bumped to 0.6.0.

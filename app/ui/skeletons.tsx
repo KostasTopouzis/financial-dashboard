@@ -162,6 +162,27 @@ export function InvoicesMobileSkeleton() {
   );
 }
 
+export function CustomersTableSkeleton() {
+  return (
+    <div
+      className={`${shimmer} relative mt-6 overflow-hidden rounded border border-line bg-surface`}
+    >
+      <div className="h-11 border-b border-line bg-surface-sunken" />
+      {Array.from({ length: 6 }, (_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-3 border-b border-line px-6 py-3 last:border-none"
+        >
+          <div className="h-8 w-8 rounded-full bg-line" />
+          <div className="h-5 w-32 rounded-sm bg-line" />
+          <div className="ml-auto hidden h-5 w-48 rounded-sm bg-line md:block" />
+          <div className="hidden h-5 w-20 rounded-sm bg-line md:block" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function InvoicesTableSkeleton() {
   return (
     <div className="mt-6 flow-root">

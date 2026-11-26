@@ -1,4 +1,4 @@
-# Ashby & Vale Financial Dashboard v0.4.0
+# Ashby & Vale Financial Dashboard v0.5.0
 
 The Ashby & Vale dashboard is a freelancer dashboard app that in its final version will allow users to create an account, log in and view their data in their own personal workspace. 
 
@@ -16,11 +16,13 @@ The Ashby & Vale dashboard is a freelancer dashboard app that in its final versi
 
 ## New Features
 
-v0.4.0 gives every user a personal workspace:
+v0.5.0 adds full client management:
 
-- Each account sees and manages only its own clients, invoices and revenue. Another user's invoices cannot be viewed, edited or deleted, even with a direct link.
-- The sidebar shows whose workspace you are in.
-- A second demo account lets you sign in as two different users and compare their workspaces.
+- Add, edit and delete clients, with an optional photo (PNG, JPEG or WebP, up to 1 MB).
+- Each client has their own page showing how much they have been billed, how much has been collected and how much is outstanding, along with their full invoice history.
+- Start a new invoice from a client's page with that client already selected.
+- A client who still has invoices can't be deleted, so no invoice is ever left without a client. Deleting any other client asks for confirmation first.
+- Each email address can belong to only one client in your workspace.
 
 ## Project History 
 
@@ -98,7 +100,7 @@ Visit the live site: [https://financial-dashboard-one-bice.vercel.app/](https://
 
 ### Run locally
 
-You will need Node.js 20.9 or later, [pnpm](https://pnpm.io/) and a PostgreSQL database (for example a free Supabase or Neon database).
+You will need Node.js 20.9 or later, [pnpm](https://pnpm.io/) and a [Supabase](https://supabase.com/) project, which provides both the PostgreSQL database and the storage for client photos.
 
 1. Clone the repository and install the dependencies:
 
@@ -119,6 +121,11 @@ You will need Node.js 20.9 or later, [pnpm](https://pnpm.io/) and a PostgreSQL d
 
    # Base URL of the app
    AUTH_URL=http://localhost:3000/api/auth
+
+   # Supabase project URL and service role key, used to store client photos.
+   # Keep the key secret: it is only ever used on the server.
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
    ```
 
 3. Start the development server:
@@ -127,7 +134,7 @@ You will need Node.js 20.9 or later, [pnpm](https://pnpm.io/) and a PostgreSQL d
    pnpm dev
    ```
 
-4. Fill the database with sample data by visiting [http://localhost:3000/seed](http://localhost:3000/seed) once. This creates the tables and adds sample users, customers, invoices and revenue.
+4. Fill the database with sample data by visiting [http://localhost:3000/seed](http://localhost:3000/seed) once. This creates the tables and the photo storage bucket, and adds sample users, customers, invoices and revenue. Visiting it again is safe: it also upgrades a database created by an earlier version.
 
 5. Open [http://localhost:3000](http://localhost:3000) and log in with one of the sample accounts. Each has its own workspace:
 

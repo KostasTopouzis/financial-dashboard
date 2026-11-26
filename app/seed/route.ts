@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
+import { ensureCustomerImageBucket } from '../lib/customer-images';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -66,6 +67,19 @@ async function seedCustomers(tx: Tx) {
   `;
   await tx`CREATE INDEX IF NOT EXISTS customers_user_id_idx ON customers (user_id)`;
 
+  // Customer management: a photo is optional (the UI shows initials), and
+  // uploaded photos live at long Supabase Storage URLs, so the column
+  // becomes nullable TEXT.
+  await tx`ALTER TABLE customers ALTER COLUMN image_url TYPE TEXT`;
+  await tx`ALTER TABLE customers ALTER COLUMN image_url DROP NOT NULL`;
+  // One client per email address inside a workspace. lower() makes
+  // "Amy@x.com" and "amy@x.com" count as the same address. Two different
+  // users may still both have a client with the same email.
+  await tx`
+    CREATE UNIQUE INDEX IF NOT EXISTS customers_user_id_email_key
+    ON customers (user_id, lower(email))
+  `;
+
   for (const customer of customers) {
     await tx`
       INSERT INTO customers (id, user_id, name, email, image_url)
@@ -79,6 +93,12 @@ async function seedInvoices(tx: Tx) {
   // The composite foreign key (customer_id, user_id) means an invoice can
   // only reference a customer that belongs to the same user. The database
   // itself refuses a cross-workspace invoice, even if app code has a bug.
+  //
+  // Deleting a customer who still has invoices is refused (NO ACTION, the
+  // default), so invoices are never wiped out as a side effect. Deleting a
+  // whole user still removes everything: invoices_user_id_fkey cascades
+  // from users, and NO ACTION is only checked at the end of the statement,
+  // after the cascades have already removed the invoices.
   await tx`
     CREATE TABLE IF NOT EXISTS invoices (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -87,10 +107,11 @@ async function seedInvoices(tx: Tx) {
       amount INT NOT NULL,
       status VARCHAR(255) NOT NULL,
       date DATE NOT NULL,
+      CONSTRAINT invoices_user_id_fkey
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
       CONSTRAINT invoices_customer_owner_fkey
         FOREIGN KEY (customer_id, user_id)
         REFERENCES customers (id, user_id)
-        ON DELETE CASCADE
     );
   `;
 
@@ -111,10 +132,39 @@ async function seedInvoices(tx: Tx) {
         ALTER TABLE invoices
         ADD CONSTRAINT invoices_customer_owner_fkey
           FOREIGN KEY (customer_id, user_id)
-          REFERENCES customers (id, user_id)
-          ON DELETE CASCADE;
+          REFERENCES customers (id, user_id);
       END IF;
     END $$;
+  `;
+  // Existing database: the customer key used to cascade (confdeltype 'c'),
+  // which silently deleted a customer's invoices along with them. Rebuild
+  // it without the cascade, and add the direct link to users first so
+  // deleting a user keeps working.
+  await tx`
+    DO $$ BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'invoices_user_id_fkey'
+      ) THEN
+        ALTER TABLE invoices
+        ADD CONSTRAINT invoices_user_id_fkey
+          FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+      END IF;
+      IF EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'invoices_customer_owner_fkey' AND confdeltype = 'c'
+      ) THEN
+        ALTER TABLE invoices DROP CONSTRAINT invoices_customer_owner_fkey;
+        ALTER TABLE invoices
+        ADD CONSTRAINT invoices_customer_owner_fkey
+          FOREIGN KEY (customer_id, user_id)
+          REFERENCES customers (id, user_id);
+      END IF;
+    END $$;
+  `;
+  // Used by the customer page's invoice history.
+  await tx`
+    CREATE INDEX IF NOT EXISTS invoices_customer_id_idx
+    ON invoices (customer_id, date DESC)
   `;
   // Every invoice query filters by user and most sort by date.
   await tx`
@@ -187,6 +237,9 @@ export async function GET() {
       await seedInvoices(tx);
       await seedRevenue(tx);
     });
+
+    // Storage is a separate service, so it can't join the SQL transaction.
+    await ensureCustomerImageBucket();
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {

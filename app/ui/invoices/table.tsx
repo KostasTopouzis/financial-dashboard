@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import CustomerAvatar from '@/app/ui/customers/avatar';
 import { UpdateInvoice, DeleteInvoice } from '@/app/ui/invoices/buttons';
 import InvoiceStatus from '@/app/ui/invoices/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
@@ -36,13 +36,7 @@ export default async function InvoicesTable({
           <li key={invoice.id} className="p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <Image
-                  src={invoice.image_url}
-                  className="shrink-0 rounded-full"
-                  width={32}
-                  height={32}
-                  alt=""
-                />
+                <CustomerAvatar name={invoice.name} imageUrl={invoice.image_url} size={32} />
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-ink">
                     {invoice.name}
@@ -103,13 +97,7 @@ export default async function InvoicesTable({
               >
                 <td className="whitespace-nowrap py-3 pl-6 pr-3">
                   <div className="flex items-center gap-3">
-                    <Image
-                      src={invoice.image_url}
-                      className="rounded-full"
-                      width={28}
-                      height={28}
-                      alt=""
-                    />
+                    <CustomerAvatar name={invoice.name} imageUrl={invoice.image_url} size={28} />
                     <span className="font-semibold">{invoice.name}</span>
                   </div>
                 </td>

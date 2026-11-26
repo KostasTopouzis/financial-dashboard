@@ -12,7 +12,13 @@ import {
 import { Button, secondaryActionClass } from '@/app/ui/button';
 import { createInvoice, State } from '@/app/lib/actions';
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+export default function Form({
+  customers,
+  defaultCustomerId,
+}: {
+  customers: CustomerField[];
+  defaultCustomerId?: string;
+}) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(createInvoice, initialState);
 
@@ -29,7 +35,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               id="customer"
               name="customerId"
               className="field-input peer cursor-pointer"
-              defaultValue=""
+              defaultValue={defaultCustomerId ?? ''}
               aria-describedby="customer-error"
             >
               <option value="" disabled>

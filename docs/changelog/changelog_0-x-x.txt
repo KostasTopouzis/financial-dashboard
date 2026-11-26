@@ -255,3 +255,80 @@ Category: documentation
 - README.md: version (0.4.0), New Features and the second demo
   account in How to Run.
 - package.json: version bumped to 0.4.0.
+
+
+v0.5.0: Client management and client page | 2026-11-26 13:29
+
+Category: architecture
+
+- app/seed/route.ts: deleting a client who still has invoices is now
+  refused by the database. The invoices -> customers foreign key no
+  longer cascades (it silently deleted a client's invoices), and a new
+  invoices -> users key cascades so deleting a user still works.
+  Adds a unique index on (user_id, lower(email)) so a workspace can't
+  hold two clients with the same email, makes customers.image_url a
+  nullable TEXT column, and indexes invoices by (customer_id, date).
+  Existing databases are upgraded in place; the route also creates
+  the photo storage bucket.
+- app/lib/customer-images.ts: new server-only module for client
+  photos in Supabase Storage, called over its REST API with fetch.
+  Checks the file's first bytes (PNG, JPEG or WebP only) and a 1 MB
+  limit, stores files under the owner's id with random names, and
+  only deletes files inside the owner's own folder.
+- app/lib/actions.ts: new createCustomer, updateCustomer and
+  deleteCustomer Server Actions. Each checks the caller, validates
+  with Zod (trimmed name, lowercased email), turns Postgres errors
+  23505 (duplicate email) and 23503 (client has invoices) into form
+  messages and sends typed values back so a failed submit keeps them.
+  A photo is uploaded before the row is saved and removed again if
+  saving fails; a replaced photo is deleted afterwards. Invoice and
+  client changes now revalidate the whole dashboard.
+- app/lib/data.ts: new fetchCustomerById (client with invoice totals,
+  cached per request) and fetchCustomerInvoices. A shared isUuid()
+  check makes malformed ids show "not found" instead of an error,
+  including on the invoice edit page. Client invoice counts are
+  returned as numbers.
+- app/lib/definitions.ts: image_url may be null; new CustomerSummary
+  and CustomerInvoice types.
+- next.config.ts: next/image allows photos from the storage bucket,
+  and the Server Action body limit is raised to 2 MB for uploads.
+
+Category: frontend
+
+- app/dashboard/customers/page.tsx: the placeholder is replaced by a
+  searchable client list with a New client button and a loading
+  skeleton.
+- app/dashboard/customers/[id]/page.tsx: new client page with photo,
+  email, last invoice date, totals (billed, collected, outstanding,
+  invoices), invoice history and a delete section. The client's name
+  is used as the page title.
+- app/dashboard/customers/create, [id]/edit: new create and edit
+  pages sharing one form.
+- app/dashboard/customers/[id]/not-found.tsx, customers/error.tsx:
+  "Client not found" page and an error boundary with a retry button.
+- app/ui/customers/table.tsx: rebuilt; every client links to their
+  page, with stacked cards on small screens.
+- app/ui/customers/customer-form.tsx: name, email and optional photo
+  with a live preview and a "Remove current photo" option.
+- app/ui/customers/delete-customer.tsx: two-step delete with
+  confirmation, disabled with an explanation while the client still
+  has invoices.
+- app/ui/customers/avatar.tsx: client photo, or their initials when
+  there is none. Used by the client, invoice and overview lists.
+- app/ui/customers/invoice-history.tsx, buttons.tsx: the client's
+  invoices with edit and delete buttons, and the New client, Edit
+  client and New invoice links.
+- app/dashboard/invoices/create/page.tsx, app/ui/invoices/
+  create-form.tsx: ?customerId= pre-selects the client, but only if
+  they belong to the signed-in user.
+- app/ui/dashboard/nav-links.tsx: sections stay highlighted on their
+  sub-pages.
+- app/ui/dashboard/cards.tsx: new "billed" card type.
+- app/ui/skeletons.tsx: new CustomersTableSkeleton.
+
+Category: documentation
+
+- docs/progress.md: client page done; the sign-up page is next.
+- README.md: version (0.5.0), New Features, and the Supabase Storage
+  variables in How to Run.
+- package.json: version bumped to 0.5.0.

@@ -22,6 +22,13 @@ async function seedUsers(tx: Tx) {
       password TEXT NOT NULL
     );
   `;
+  // Sign-up: one account per email address, ignoring letter case. The
+  // plain UNIQUE above would let "Amy@x.com" and "amy@x.com" both exist.
+  // Login looks users up by lower(email), which this index also speeds up.
+  await tx`
+    CREATE UNIQUE INDEX IF NOT EXISTS users_email_lower_key
+    ON users (lower(email))
+  `;
 
   for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);

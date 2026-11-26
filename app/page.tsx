@@ -41,13 +41,21 @@ export default function Page() {
           <p className="mt-6 max-w-md text-lg leading-relaxed text-on-brand-muted">
             {brand.description}
           </p>
-          <Link
-            href="/login"
-            className="mt-10 inline-flex items-center gap-3 rounded bg-accent-soft px-6 py-3 font-semibold text-brand-deep transition-colors hover:bg-on-brand focus-visible:outline-accent-soft"
-          >
-            Sign in to your workspace
-            <ArrowRightIcon className="h-5 w-5" aria-hidden="true" />
-          </Link>
+          <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-3 rounded bg-accent-soft px-6 py-3 font-semibold text-brand-deep transition-colors hover:bg-on-brand focus-visible:outline-accent-soft"
+            >
+              Sign in to your workspace
+              <ArrowRightIcon className="h-5 w-5" aria-hidden="true" />
+            </Link>
+            <Link
+              href="/signup"
+              className="font-semibold text-on-brand underline underline-offset-4 transition-colors hover:text-accent-soft focus-visible:outline-accent-soft"
+            >
+              Create an account
+            </Link>
+          </div>
         </div>
 
         <p className="relative text-sm text-on-brand-muted">

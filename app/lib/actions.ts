@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
+import bcrypt from 'bcrypt';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import { requireUser } from './dal';
@@ -34,6 +35,130 @@ export async function authenticate(
 }
 
 const sql = postgres(process.env.POSTGRES_URL!, {ssl: 'require' });
+
+// ---------------------------------------------------------------------------
+// Sign-up
+// ---------------------------------------------------------------------------
+
+// bcrypt only looks at the first 72 bytes of a password and ignores the
+// rest, so a longer one would give a false sense of strength. Bytes, not
+// characters: an emoji or accented letter takes several bytes.
+const BCRYPT_MAX_BYTES = 72;
+
+const SignUpSchema = z
+  .object({
+    name: z
+      .string({ invalid_type_error: 'Please enter your name.' })
+      .trim()
+      .min(1, { message: 'Please enter your name.' })
+      .max(100, { message: 'Your name must be 100 characters or fewer.' }),
+    // Stored exactly as typed: the part before "@" may be case-sensitive
+    // on some mail servers (RFC 5321), so mail must go to the original
+    // spelling. Uniqueness and login ignore case instead, through
+    // lower(email) in the users_email_lower_key index and in auth.ts, so
+    // "Amy@x.com" and "amy@x.com" are still one account.
+    email: z
+      .string({ invalid_type_error: 'Please enter an email address.' })
+      .trim()
+      .email({ message: 'Please enter a valid email address.' })
+      .max(255, { message: 'The email must be 255 characters or fewer.' }),
+    // Not trimmed: spaces are a legitimate part of a password.
+    password: z
+      .string({ invalid_type_error: 'Please choose a password.' })
+      .min(8, { message: 'Use at least 8 characters.' })
+      .refine(
+        (p) => new TextEncoder().encode(p).length <= BCRYPT_MAX_BYTES,
+        { message: 'The password is too long (72 bytes at most).' },
+      ),
+    confirmPassword: z.string({
+      invalid_type_error: 'Please repeat your password.',
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'The passwords do not match.',
+    path: ['confirmPassword'],
+  });
+
+export type SignUpState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+    confirmPassword?: string[];
+  };
+  message?: string | null;
+  // Refills the form after a failed submit. Passwords are never sent back.
+  values?: { name: string; email: string };
+};
+
+export async function signUp(
+  prevState: SignUpState,
+  formData: FormData,
+): Promise<SignUpState> {
+  const values = {
+    name: String(formData.get('name') ?? ''),
+    email: String(formData.get('email') ?? ''),
+  };
+
+  const parsed = SignUpSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+  });
+
+  if (!parsed.success) {
+    return {
+      errors: parsed.error.flatten().fieldErrors,
+      message: 'Please fix the highlighted fields.',
+      values,
+    };
+  }
+
+  const { name, email, password } = parsed.data;
+
+  // Cost factor 10, the same as the seeded demo account.
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    // No "does this email exist?" query first: two sign-ups could both
+    // pass that check at the same moment. The unique constraint on email
+    // is the single source of truth, and its error is turned into a
+    // friendly message below.
+    await sql`
+      INSERT INTO users (name, email, password)
+      VALUES (${name}, ${email}, ${hashedPassword})
+    `;
+  } catch (error) {
+    if (isPgError(error, '23505')) {
+      return {
+        errors: {
+          email: ['An account with this email already exists. Try signing in.'],
+        },
+        message: 'Failed to create account.',
+        values,
+      };
+    }
+    console.error(error);
+    return { message: 'Database Error: Failed to create account.', values };
+  }
+
+  // The account exists, so sign the new user straight in. On success
+  // signIn() redirects by throwing, which is why it sits outside the
+  // try/catch above and why only AuthError is caught here.
+  try {
+    await signIn('credentials', { email, password, redirectTo: '/dashboard' });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return {
+        message: 'Your account was created, but signing in failed. Please sign in.',
+      };
+    }
+    throw error;
+  }
+
+  return {};
+}
 
 const FormSchema = z.object({
     id: z.string(),

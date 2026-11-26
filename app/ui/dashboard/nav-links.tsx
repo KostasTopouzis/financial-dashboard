@@ -31,7 +31,12 @@ export default function NavLinks() {
     <>
       {links.map((link) => {
         const LinkIcon = link.icon;
-        const isActive = pathname === link.href;
+        // Sections stay highlighted on their sub-pages (a client's page,
+        // an invoice's edit page). Overview only matches exactly, or it
+        // would match every dashboard URL.
+        const isActive =
+          pathname === link.href ||
+          (link.href !== '/dashboard' && pathname.startsWith(`${link.href}/`));
         return (
           <Link
             key={link.name}

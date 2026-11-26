@@ -9,11 +9,29 @@ export type User = {
   password: string;
 };
 
+// image_url is null when no photo has been uploaded; the UI shows the
+// customer's initials instead (see app/ui/customers/avatar.tsx).
 export type Customer = {
   id: string;
   name: string;
   email: string;
-  image_url: string;
+  image_url: string | null;
+};
+
+// One customer with their invoice totals, for the customer page.
+// Amounts are in cents.
+export type CustomerSummary = Customer & {
+  total_invoices: number;
+  total_paid: number;
+  total_pending: number;
+  last_invoice_date: string | null;
+};
+
+export type CustomerInvoice = {
+  id: string;
+  amount: number;
+  date: string;
+  status: 'pending' | 'paid';
 };
 
 export type Invoice = {
@@ -34,7 +52,7 @@ export type Revenue = {
 export type LatestInvoice = {
   id: string;
   name: string;
-  image_url: string;
+  image_url: string | null;
   email: string;
   amount: string;
 };
@@ -49,7 +67,7 @@ export type InvoicesTable = {
   customer_id: string;
   name: string;
   email: string;
-  image_url: string;
+  image_url: string | null;
   date: string;
   amount: number;
   status: 'pending' | 'paid';
@@ -59,7 +77,7 @@ export type CustomersTableType = {
   id: string;
   name: string;
   email: string;
-  image_url: string;
+  image_url: string | null;
   total_invoices: number;
   total_pending: number;
   total_paid: number;
@@ -69,7 +87,7 @@ export type FormattedCustomersTable = {
   id: string;
   name: string;
   email: string;
-  image_url: string;
+  image_url: string | null;
   total_invoices: number;
   total_pending: string;
   total_paid: string;

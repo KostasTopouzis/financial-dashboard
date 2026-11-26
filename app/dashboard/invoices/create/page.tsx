@@ -7,9 +7,19 @@ export const metadata: Metadata = {
     title: 'New invoice',
 };
 
-export default async function Page() {
+export default async function Page(props: {
+  searchParams?: Promise<{ customerId?: string }>;
+}) {
+  const searchParams = await props.searchParams;
   const customers = await fetchCustomers();
- 
+  // "New invoice" on a client's page links here with ?customerId=...
+  // Only pre-select it if it's one of this user's clients.
+  const defaultCustomerId = customers.some(
+    (c) => c.id === searchParams?.customerId,
+  )
+    ? searchParams?.customerId
+    : undefined;
+
   return (
     <main>
       <Breadcrumbs
@@ -22,7 +32,7 @@ export default async function Page() {
           },
         ]}
       />
-      <Form customers={customers} />
+      <Form customers={customers} defaultCustomerId={defaultCustomerId} />
     </main>
   );
 }

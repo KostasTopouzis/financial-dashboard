@@ -7,6 +7,12 @@ import postgres from 'postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import { requireUser } from './dal';
+import {
+  type CheckedImage,
+  deleteCustomerImage,
+  readImageUpload,
+  uploadCustomerImage,
+} from './customer-images';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -88,7 +94,8 @@ export async function createInvoice(prevState: State, formData: FormData) {
         throw new Error('Database Error: Failed to Create Invoice.');
     }
 
-    revalidatePath('/dashboard/invoices');
+    // Invoice changes also move the overview cards and customer totals.
+    revalidatePath('/dashboard', 'layout');
     redirect('/dashboard/invoices');
 }
 
@@ -134,8 +141,231 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
     return { message: 'Invoice not found. Failed to Update Invoice.' };
   }
 
-  revalidatePath('/dashboard/invoices');
+  // Invoice changes also move the overview cards and customer totals.
+  revalidatePath('/dashboard', 'layout');
   redirect('/dashboard/invoices');
+}
+
+// ---------------------------------------------------------------------------
+// Customers
+// ---------------------------------------------------------------------------
+
+const CustomerSchema = z.object({
+  name: z
+    .string({ invalid_type_error: 'Please enter a name.' })
+    .trim()
+    .min(1, { message: 'Please enter a name.' })
+    .max(100, { message: 'The name must be 100 characters or fewer.' }),
+  email: z
+    .string({ invalid_type_error: 'Please enter an email address.' })
+    .trim()
+    .toLowerCase()
+    .email({ message: 'Please enter a valid email address.' })
+    .max(255, { message: 'The email must be 255 characters or fewer.' }),
+});
+
+export type CustomerState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    image?: string[];
+  };
+  message?: string | null;
+  // React resets a form after its action runs. Sending the typed values
+  // back lets the form show them again instead of empty fields.
+  values?: { name: string; email: string };
+};
+
+function submittedValues(formData: FormData) {
+  return {
+    name: String(formData.get('name') ?? ''),
+    email: String(formData.get('email') ?? ''),
+  };
+}
+
+// Postgres reports constraint failures with a five-character SQLSTATE code.
+// Matching on the code (and the constraint name) keeps the friendly
+// message tied to the exact rule that failed.
+function isPgError(error: unknown, code: string, constraint?: string) {
+  if (typeof error !== 'object' || error === null) return false;
+  const e = error as { code?: string; constraint_name?: string };
+  return e.code === code && (!constraint || e.constraint_name === constraint);
+}
+
+const DUPLICATE_EMAIL: CustomerState = {
+  errors: { email: ['You already have a client with this email address.'] },
+  message: 'Failed to save client.',
+};
+
+// Validates the text fields and the optional photo together, so the form
+// shows every problem at once instead of one per submit.
+async function parseCustomerForm(formData: FormData) {
+  const fields = CustomerSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+  });
+  const image = await readImageUpload(formData.get('image'));
+  const imageError = image && 'error' in image ? image.error : undefined;
+
+  if (!fields.success || imageError) {
+    return {
+      ok: false as const,
+      state: {
+        errors: {
+          ...(fields.success ? {} : fields.error.flatten().fieldErrors),
+          ...(imageError ? { image: [imageError] } : {}),
+        },
+        message: 'Please fix the highlighted fields.',
+      } satisfies CustomerState,
+    };
+  }
+
+  return {
+    ok: true as const,
+    data: fields.data,
+    image: image as CheckedImage | null,
+  };
+}
+
+// Customer names and photos appear on the overview, the invoice list and
+// the customer pages, so refresh the whole dashboard section.
+function revalidateCustomers() {
+  revalidatePath('/dashboard', 'layout');
+}
+
+export async function createCustomer(
+  prevState: CustomerState,
+  formData: FormData,
+): Promise<CustomerState> {
+  const { id: userId } = await requireUser();
+  const values = submittedValues(formData);
+
+  const parsed = await parseCustomerForm(formData);
+  if (!parsed.ok) return { ...parsed.state, values };
+  const { name, email } = parsed.data;
+
+  // Upload first so the row is only written once the photo is safely
+  // stored. If the insert then fails, the orphaned file is removed.
+  let imageUrl: string | null = null;
+  try {
+    if (parsed.image) imageUrl = await uploadCustomerImage(userId, parsed.image);
+  } catch (error) {
+    console.error(error);
+    return { message: 'The photo could not be uploaded. Please try again.', values };
+  }
+
+  let customerId: string;
+  try {
+    const [row] = await sql<{ id: string }[]>`
+      INSERT INTO customers (user_id, name, email, image_url)
+      VALUES (${userId}, ${name}, ${email}, ${imageUrl})
+      RETURNING id
+    `;
+    customerId = row.id;
+  } catch (error) {
+    await deleteCustomerImage(userId, imageUrl);
+    if (isPgError(error, '23505', 'customers_user_id_email_key')) {
+      return { ...DUPLICATE_EMAIL, values };
+    }
+    console.error(error);
+    return { message: 'Database Error: Failed to create client.', values };
+  }
+
+  revalidateCustomers();
+  redirect(`/dashboard/customers/${customerId}`);
+}
+
+export async function updateCustomer(
+  id: string,
+  prevState: CustomerState,
+  formData: FormData,
+): Promise<CustomerState> {
+  const { id: userId } = await requireUser();
+  const values = submittedValues(formData);
+
+  const parsed = await parseCustomerForm(formData);
+  if (!parsed.ok) return { ...parsed.state, values };
+  const { name, email } = parsed.data;
+  const removeImage = formData.get('removeImage') === 'on';
+
+  // Read the current photo first: the owner check happens here, and the
+  // old URL is needed to clean up the file if it gets replaced.
+  const [current] = await sql<{ image_url: string | null }[]>`
+    SELECT image_url FROM customers WHERE id = ${id} AND user_id = ${userId}
+  `;
+  if (!current) {
+    return { message: 'Client not found. Failed to save client.', values };
+  }
+
+  let imageUrl = removeImage ? null : current.image_url;
+  try {
+    if (parsed.image) imageUrl = await uploadCustomerImage(userId, parsed.image);
+  } catch (error) {
+    console.error(error);
+    return { message: 'The photo could not be uploaded. Please try again.', values };
+  }
+
+  try {
+    await sql`
+      UPDATE customers
+      SET name = ${name}, email = ${email}, image_url = ${imageUrl}
+      WHERE id = ${id} AND user_id = ${userId}
+    `;
+  } catch (error) {
+    if (parsed.image) await deleteCustomerImage(userId, imageUrl);
+    if (isPgError(error, '23505', 'customers_user_id_email_key')) {
+      return { ...DUPLICATE_EMAIL, values };
+    }
+    console.error(error);
+    return { message: 'Database Error: Failed to save client.', values };
+  }
+
+  // The row now points at the new photo (or none), so the old file can go.
+  if (imageUrl !== current.image_url) {
+    await deleteCustomerImage(userId, current.image_url);
+  }
+
+  revalidateCustomers();
+  redirect(`/dashboard/customers/${id}`);
+}
+
+export type DeleteCustomerState = { message?: string | null };
+
+export async function deleteCustomer(
+  id: string,
+  prevState: DeleteCustomerState,
+): Promise<DeleteCustomerState> {
+  const { id: userId } = await requireUser();
+
+  let deleted: { image_url: string | null } | undefined;
+  try {
+    // The database is the final judge: invoices_customer_owner_fkey refuses
+    // to delete a customer that invoices still point at. The UI disables
+    // the button in that case, but this also covers a stale page or a
+    // hand-crafted request.
+    [deleted] = await sql<{ image_url: string | null }[]>`
+      DELETE FROM customers
+      WHERE id = ${id} AND user_id = ${userId}
+      RETURNING image_url
+    `;
+  } catch (error) {
+    if (isPgError(error, '23503')) {
+      return {
+        message:
+          'This client still has invoices. Delete or reassign them first.',
+      };
+    }
+    console.error(error);
+    return { message: 'Database Error: Failed to delete client.' };
+  }
+
+  if (!deleted) {
+    return { message: 'Client not found. It may already have been deleted.' };
+  }
+
+  await deleteCustomerImage(userId, deleted.image_url);
+  revalidateCustomers();
+  redirect('/dashboard/customers');
 }
 
 export async function deleteInvoice(id: string) {
@@ -148,5 +378,6 @@ export async function deleteInvoice(id: string) {
     throw new Error('Database Error: Failed to Delete Invoice.');
   }
 
-  revalidatePath('/dashboard/invoices');
+  // Invoice changes also move the overview cards and customer totals.
+  revalidatePath('/dashboard', 'layout');
 }

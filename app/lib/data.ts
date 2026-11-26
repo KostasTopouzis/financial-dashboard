@@ -1,6 +1,9 @@
 import postgres from 'postgres';
+import { cache } from 'react';
 import {
   CustomerField,
+  CustomerInvoice,
+  CustomerSummary,
   CustomersTableType,
   InvoiceForm,
   InvoicesTable,
@@ -16,6 +19,11 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 // Reading the session uses cookies, which also makes Next.js render these
 // pages per request, so the old `await connection()` calls are no longer
 // needed.
+
+// Ids come from the URL, so they can be anything. Postgres throws on a
+// malformed UUID, which would show the error page instead of "not found".
+const isUuid = (value: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
 export async function fetchRevenue() {
   const { id: userId } = await requireUser();
@@ -167,6 +175,8 @@ export async function fetchInvoicesPages(query: string) {
 
 export async function fetchInvoiceById(id: string) {
   const { id: userId } = await requireUser();
+  // The edit page turns undefined into notFound().
+  if (!isUuid(id)) return undefined;
   try {
     // Matching the owner as well as the id means another user's invoice
     // id simply finds nothing, and the edit page shows "not found".
@@ -237,6 +247,8 @@ export async function fetchFilteredCustomers(query: string) {
 
     const customers = data.map((customer) => ({
       ...customer,
+      // COUNT() is a bigint, which the driver returns as a string.
+      total_invoices: Number(customer.total_invoices),
       total_pending: formatCurrency(customer.total_pending),
       total_paid: formatCurrency(customer.total_paid),
     }));
@@ -245,5 +257,60 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
+  }
+}
+
+// Wrapped in React's `cache` because the customer page calls it twice per
+// request: once for the browser tab title (generateMetadata) and once for
+// the page itself. The second call reuses the first result.
+export const fetchCustomerById = cache(async function fetchCustomerById(
+  id: string,
+): Promise<CustomerSummary | undefined> {
+  const { id: userId } = await requireUser();
+  if (!isUuid(id)) return undefined;
+
+  try {
+    // Same ownership rule as invoices: another user's customer id finds
+    // nothing, so the page shows "not found" rather than their data.
+    // COALESCE turns the NULL sums of a customer without invoices into 0.
+    const data = await sql<CustomerSummary[]>`
+      SELECT
+        customers.id,
+        customers.name,
+        customers.email,
+        customers.image_url,
+        COUNT(invoices.id)::int AS total_invoices,
+        COALESCE(SUM(invoices.amount) FILTER (WHERE invoices.status = 'paid'), 0)::int AS total_paid,
+        COALESCE(SUM(invoices.amount) FILTER (WHERE invoices.status = 'pending'), 0)::int AS total_pending,
+        MAX(invoices.date)::text AS last_invoice_date
+      FROM customers
+      LEFT JOIN invoices ON invoices.customer_id = customers.id
+      WHERE customers.id = ${id} AND customers.user_id = ${userId}
+      GROUP BY customers.id
+    `;
+
+    return data[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch customer.');
+  }
+});
+
+export async function fetchCustomerInvoices(customerId: string) {
+  const { id: userId } = await requireUser();
+  if (!isUuid(customerId)) return [];
+
+  try {
+    const invoices = await sql<CustomerInvoice[]>`
+      SELECT id, amount, date::text AS date, status
+      FROM invoices
+      WHERE customer_id = ${customerId} AND user_id = ${userId}
+      ORDER BY date DESC
+    `;
+
+    return invoices;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error("Failed to fetch the customer's invoices.");
   }
 }

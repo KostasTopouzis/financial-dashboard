@@ -1,5 +1,5 @@
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
+import CustomerAvatar from '@/app/ui/customers/avatar';
 import { fetchLatestInvoices } from '@/app/lib/data';
 
 export default async function LatestInvoices() {
@@ -30,13 +30,7 @@ export default async function LatestInvoices() {
               className="flex items-center justify-between gap-4 py-3.5"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <Image
-                  src={invoice.image_url}
-                  alt=""
-                  className="shrink-0 rounded-full"
-                  width={36}
-                  height={36}
-                />
+                <CustomerAvatar name={invoice.name} imageUrl={invoice.image_url} size={36} />
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-ink">
                     {invoice.name}

@@ -5,9 +5,11 @@ import {
   ClockIcon,
   UserGroupIcon,
   DocumentTextIcon,
+  ReceiptPercentIcon,
 } from '@heroicons/react/24/outline';
 
 const iconMap = {
+  billed: ReceiptPercentIcon,
   collected: BanknotesIcon,
   customers: UserGroupIcon,
   pending: ClockIcon,
@@ -39,7 +41,7 @@ export function Card({
 }: {
   title: string;
   value: number | string;
-  type: 'invoices' | 'customers' | 'pending' | 'collected';
+  type: keyof typeof iconMap;
 }) {
   const Icon = iconMap[type];
 
